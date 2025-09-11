@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThinkTank IIBA × GECAM - Livre Blanc Business Analyse Cameroun</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="https://via.placeholder.com/40x40/D86018/FFFFFF?text=IIBA" alt="IIBA" class="nav-logo">
+                <span class="nav-title">ThinkTank IIBA × GECAM</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#" class="nav-link" data-page="accueil">Accueil</a>
+                <a href="#" class="nav-link" data-page="projet">Dashboard</a>
+                <a href="#" class="nav-link" data-page="planning">Planning</a>
+                <a href="#" class="nav-link" data-page="equipe">Équipe</a>
+                <a href="#" class="nav-link" data-page="ressources">Ressources</a>
+                <a href="#" class="nav-link admin-only hidden" data-page="admin">Admin</a>
+                <button class="btn btn--primary" id="ctaButton">Rejoindre le projet</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CTA Flottant -->
+    <div class="floating-cta" id="floatingCta">
+        <button class="btn btn--primary">
+            <span>⏰</span>
+            Rejoindre maintenant
+        </button>
+    </div>
+
+    <main id="app">
+        <!-- Page Accueil -->
+        <div class="page active" id="accueil">
+            <!-- Hero Section avec présentation -->
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-content">
+                        <div class="project-intro">
+                            <div class="intro-leader">
+                                <img src="https://via.placeholder.com/100x100/D86018/FFFFFF?text=RB" alt="Rosine BELLA" class="leader-photo">
+                                <div class="intro-text">
+                                    <h2>Mot de Rosine BELLA</h2>
+                                    <p><em>"En tant que représentante IIBA au GECAM, je vous invite à participer à ce projet historique : la rédaction collaborative du 1er Livre Blanc de la Business Analyse au Cameroun. Ensemble, nous allons poser les bases de notre profession."</em></p>
+                                    <p class="intro-signature">— Rosine BELLA, Représentante IIBA Cameroun au GECAM</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h1 class="hero-title">1er Livre Blanc de la Business Analyse au Cameroun</h1>
+                        <p class="hero-subtitle">Rejoignez notre communauté de professionnels pour co-créer le référentiel de la Business Analyse au Cameroun</p>
+                        
+                        <div class="countdown">
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="days">0</span>
+                                <span class="countdown-label">jours</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="hours">0</span>
+                                <span class="countdown-label">heures</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-number" id="minutes">0</span>
+                                <span class="countdown-label">minutes</span>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary btn--lg" id="heroCtaButton">Participer au projet</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats-section">
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">14</div>
+                            <div class="stat-label">Sous-sections à rédiger</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="contributorsCount">10</div>
+                            <div class="stat-label">Contributeurs inscrits</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">82</div>
+                            <div class="stat-label">Jours restants</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">2</div>
+                            <div class="stat-label">Documents livrables</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Top 5 Sous-sections Engagées -->
+            <section class="top-sections">
+                <div class="container">
+                    <h2>Top 5 Sous-sections Engagées</h2>
+                    <p>Les sous-sections qui mobilisent le plus de contributeurs et d'activité</p>
+                    <div class="top-sections-grid" id="topSectionsList"></div>
+                </div>
+            </section>
+
+            <!-- Quiz Section -->
+            <section class="quiz-section">
+                <div class="container">
+                    <div class="quiz-container">
+                        <h2>Quel contributeur êtes-vous ?</h2>
+                        <p>Découvrez votre profil et recevez votre badge personnalisé</p>
+                        <div class="quiz" id="quiz">
+                            <div class="quiz-question" id="quizQuestion">
+                                <h3 id="questionText"></h3>
+                                <div class="quiz-options" id="quizOptions"></div>
+                            </div>
+                            <div class="quiz-result hidden" id="quizResult">
+                                <div class="badge-display">
+                                    <div class="badge" id="userBadge"></div>
+                                    <h3 id="badgeTitle"></h3>
+                                    <p id="badgeDescription"></p>
+                                </div>
+                                <button class="btn btn--primary" id="joinAfterQuiz">Rejoindre avec ce profil</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Page Dashboard -->
+        <div class="page" id="projet">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Dashboard Projet</h1>
+                    <div class="project-kpis">
+                        <div class="kpi-card">
+                            <div class="kpi-value" id="progressPercent">35%</div>
+                            <div class="kpi-label">Avancement global</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" id="activeSections">4</div>
+                            <div class="kpi-label">Sous-sections actives</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" id="totalXP">1415</div>
+                            <div class="kpi-label">XP total généré</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Onglets -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="kanban">Kanban</button>
+                    <button class="tab-btn" data-tab="analytics">Analytics</button>
+                    <button class="tab-btn" data-tab="heatmap">Heatmap</button>
+                    <button class="tab-btn" data-tab="classement">Classement</button>
+                </div>
+
+                <!-- Contenu Kanban -->
+                <div class="tab-content active" id="kanban">
+                    <div class="kanban-board">
+                        <div class="kanban-column" data-status="icebox">
+                            <div class="column-header">
+                                <h3>Icebox</h3>
+                                <span class="task-count">0</span>
+                            </div>
+                            <div class="column-body" id="icebox-tasks"></div>
+                        </div>
+                        <div class="kanban-column" data-status="todo">
+                            <div class="column-header">
+                                <h3>À faire</h3>
+                                <span class="task-count">0</span>
+                            </div>
+                            <div class="column-body" id="todo-tasks"></div>
+                        </div>
+                        <div class="kanban-column" data-status="progress">
+                            <div class="column-header">
+                                <h3>En cours</h3>
+                                <span class="task-count">0</span>
+                            </div>
+                            <div class="column-body" id="progress-tasks"></div>
+                        </div>
+                        <div class="kanban-column" data-status="review">
+                            <div class="column-header">
+                                <h3>En revue</h3>
+                                <span class="task-count">0</span>
+                            </div>
+                            <div class="column-body" id="review-tasks"></div>
+                        </div>
+                        <div class="kanban-column" data-status="done">
+                            <div class="column-header">
+                                <h3>Terminé</h3>
+                                <span class="task-count">0</span>
+                            </div>
+                            <div class="column-body" id="done-tasks"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenu Analytics -->
+                <div class="tab-content" id="analytics">
+                    <div class="analytics-grid">
+                        <div class="chart-container">
+                            <h3>Burndown Sous-sections</h3>
+                            <canvas id="burndownChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Répartition par statut</h3>
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>XP par contributeur</h3>
+                            <canvas id="xpChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenu Heatmap -->
+                <div class="tab-content" id="heatmap">
+                    <div class="heatmap-container">
+                        <h3>Heatmap Couverture Sections × Bénévoles</h3>
+                        <div class="heatmap-grid" id="heatmapGrid"></div>
+                        <div class="heatmap-legend">
+                            <span class="legend-item"><span class="legend-color" style="background: var(--color-bg-4)"></span> Aucune contribution</span>
+                            <span class="legend-item"><span class="legend-color" style="background: var(--color-bg-2)"></span> Contribution faible</span>
+                            <span class="legend-item"><span class="legend-color" style="background: var(--color-bg-3)"></span> Contribution moyenne</span>
+                            <span class="legend-item"><span class="legend-color" style="background: var(--color-success)"></span> Contribution forte</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenu Classement -->
+                <div class="tab-content" id="classement">
+                    <div class="leaderboard">
+                        <h3>🏆 Classement des contributeurs</h3>
+                        <div class="ranking-list" id="rankingList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Planning -->
+        <div class="page" id="planning">
+            <div class="container">
+                <h1>Planning & Jalons</h1>
+                <div class="timeline">
+                    <div class="timeline-track" id="timelineTrack"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Équipe -->
+        <div class="page" id="equipe">
+            <div class="container">
+                <h1>Notre Équipe</h1>
+                <div class="team-sections">
+                    <div class="team-section">
+                        <h2>👑 Administration</h2>
+                        <div class="team-grid" id="adminTeam"></div>
+                    </div>
+                    <div class="team-section">
+                        <h2>🎯 Coordinateurs</h2>
+                        <div class="team-grid" id="coordinatorTeam"></div>
+                    </div>
+                    <div class="team-section">
+                        <h2>⭐ Contributeurs</h2>
+                        <div class="team-grid" id="contributorTeam"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Ressources -->
+        <div class="page" id="ressources">
+            <div class="container">
+                <h1>Ressources & Documents</h1>
+                <div class="resources-grid">
+                    <div class="resource-section">
+                        <h3>📘 Livre Blanc</h3>
+                        <div class="document-list" id="livreBlancSections"></div>
+                    </div>
+                    <div class="resource-section">
+                        <h3>📗 Guide Pratique</h3>
+                        <div class="document-list" id="guideSections"></div>
+                    </div>
+                    <div class="resource-section">
+                        <h3>🔗 Liens utiles</h3>
+                        <div class="links-list">
+                            <a href="https://drive.google.com/drive/folders/1ABC123" target="_blank" class="resource-link">📁 Google Drive Workspace</a>
+                            <a href="https://docs.google.com/spreadsheets/d/1DEF456" target="_blank" class="resource-link">📊 Suivi des tâches</a>
+                            <a href="https://cameroon.iiba.org/fr" target="_blank" class="resource-link">🌐 IIBA Cameroon</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Admin -->
+        <div class="page" id="admin">
+            <div class="container">
+                <h1>Administration</h1>
+                <div class="admin-grid">
+                    <div class="admin-section">
+                        <h3>⚙️ Paramètres Projet</h3>
+                        <form id="settingsForm" class="admin-form">
+                            <div class="form-group">
+                                <label class="form-label">Nom du projet</label>
+                                <input type="text" class="form-control" name="projectName" value="ThinkTank IIBA × GECAM">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date limite</label>
+                                <input type="date" class="form-control" name="deadline" value="2025-12-01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Règles XP</label>
+                                <div class="xp-rules">
+                                    <label>Prise en charge: <input type="number" name="xpPriseEnCharge" value="1" min="0" max="5"> XP</label>
+                                    <label>Transition: <input type="number" name="xpTransition" value="1" min="0" max="5"> XP</label>
+                                    <label>Recul: <input type="number" name="xpRecul" value="-1" min="-5" max="0"> XP</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn--primary">Sauvegarder</button>
+                        </form>
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h3>📥 Import/Export</h3>
+                        <div class="import-export-actions">
+                            <button class="btn btn--secondary" id="exportExcel">📤 Exporter Excel</button>
+                            <input type="file" id="importFile" accept=".xlsx,.xls" style="display: none;">
+                            <button class="btn btn--secondary" id="importExcel">📥 Importer Excel</button>
+                        </div>
+                    </div>
+
+                    <div class="admin-section">
+                        <h3>📊 Statistiques Avancées</h3>
+                        <div class="admin-stats">
+                            <div class="stat-row">
+                                <span>XP total généré:</span>
+                                <span id="adminTotalXP">1415</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Transitions Kanban:</span>
+                                <span id="adminTotalTransitions">23</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Taux de completion:</span>
+                                <span id="adminCompletionRate">28.6%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Candidature -->
+    <div class="modal hidden" id="candidatureModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Rejoindre le ThinkTank</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="candidatureForm">
+                    <div class="form-step active" id="step1">
+                        <h3>Étape 1 : Informations personnelles</h3>
+                        <div class="form-group">
+                            <label class="form-label">Nom complet *</label>
+                            <input type="text" class="form-control" name="nom" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">LinkedIn</label>
+                            <input type="url" class="form-control" name="linkedin">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Années d'expérience</label>
+                            <select class="form-control" name="experience">
+                                <option value="0-2">0-2 ans</option>
+                                <option value="3-5">3-5 ans</option>
+                                <option value="6-10">6-10 ans</option>
+                                <option value="10+">Plus de 10 ans</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn--primary" id="nextStep">Suivant</button>
+                    </div>
+                    <div class="form-step" id="step2">
+                        <h3>Étape 2 : Profil professionnel</h3>
+                        <div class="form-group">
+                            <label class="form-label">Compétences (sélectionnez toutes celles qui s'appliquent)</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="competences" value="Business Analyst"> Business Analyst</label>
+                                <label><input type="checkbox" name="competences" value="Data Analyst"> Data Analyst</label>
+                                <label><input type="checkbox" name="competences" value="Data Steward"> Data Steward</label>
+                                <label><input type="checkbox" name="competences" value="CISO"> CISO</label>
+                                <label><input type="checkbox" name="competences" value="PowerBI"> PowerBI</label>
+                                <label><input type="checkbox" name="competences" value="Scrum Master"> Scrum Master</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Secteurs d'expertise</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="secteurs" value="Finance"> Finance</label>
+                                <label><input type="checkbox" name="secteurs" value="Télécoms"> Télécoms</label>
+                                <label><input type="checkbox" name="secteurs" value="Banking"> Banking</label>
+                                <label><input type="checkbox" name="secteurs" value="Sécurité"> Sécurité</label>
+                                <label><input type="checkbox" name="secteurs" value="Tech"> Tech</label>
+                                <label><input type="checkbox" name="secteurs" value="Santé"> Santé</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Disponibilité (heures/semaine)</label>
+                            <select class="form-control" name="disponibilite">
+                                <option value="2-4">2-4 heures</option>
+                                <option value="5-8">5-8 heures</option>
+                                <option value="9-12">9-12 heures</option>
+                                <option value="12+">Plus de 12 heures</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn--outline" id="prevStep">Précédent</button>
+                            <button type="submit" class="btn btn--primary">Rejoindre le projet</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détails Sous-section -->
+    <div class="modal hidden" id="detailsModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detailsTitle">Détails de la sous-section</h2>
+                <button class="modal-close" id="detailsModalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="detailsBody">
+                <!-- Contenu dynamique -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Tooltip -->
+    <div class="tooltip hidden" id="tooltip"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
