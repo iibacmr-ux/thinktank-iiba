@@ -100,6 +100,38 @@ class ThinkTankApp {
                     statut: "Terminé", contributeurs: ["rosine", "aymard"], coordinateur: "rosine",
                     competences: ["Juridique", "Conformité"], referentiels: ["Loi 2024/017", "RGPD"],
                     echeance: "2025-09-20", transitions: 4, googleDoc: "https://docs.google.com/document/d/1ABC-LB32"
+                },
+                {
+                    id: "GP-1.1", titre: "Principes fondamentaux de la Business Analyse",
+                    description: "Bonnes pratiques essentielles, posture et responsabilités",
+                    document: "Guide Pratique", section: 1, sectionTitre: "Fondamentaux et posture",
+                    statut: "Backlog", contributeurs: ["william", "florence"], coordinateur: "florence",
+                    competences: ["Business Analyst", "Méthodologie"], referentiels: ["BABOK v3"],
+                    echeance: "2025-10-20", transitions: 0, googleDoc: "https://docs.google.com/document/d/1ABC-GP11"
+                },
+                {
+                    id: "GP-1.2", titre: "Outils et modèles (templates) clés",
+                    description: "Modèles de cahier des charges, cas d'utilisation, user stories",
+                    document: "Guide Pratique", section: 1, sectionTitre: "Fondamentaux et posture",
+                    statut: "Backlog", contributeurs: ["florence"], coordinateur: "florence",
+                    competences: ["Méthodologie", "Documentation"], referentiels: ["BABOK v3"],
+                    echeance: "2025-10-25", transitions: 0, googleDoc: "https://docs.google.com/document/d/1ABC-GP12"
+                },
+                {
+                    id: "GP-2.1", titre: "Techniques d'élicitation adaptées au contexte Cameroun",
+                    description: "Ateliers, interviews, focus groups et observation terrain",
+                    document: "Guide Pratique", section: 2, sectionTitre: "Techniques et ateliers",
+                    statut: "À faire", contributeurs: ["william", "julie"], coordinateur: "william",
+                    competences: ["Facilitation", "Élicitation"], referentiels: ["BABOK v3"],
+                    echeance: "2025-10-30", transitions: 0, googleDoc: "https://docs.google.com/document/d/1ABC-GP21"
+                },
+                {
+                    id: "GP-3.1", titre: "Checklists de conformité et de qualité",
+                    description: "Listes de contrôle pour revues, validation et conformité réglementaire",
+                    document: "Guide Pratique", section: 3, sectionTitre: "Assurance qualité",
+                    statut: "Backlog", contributeurs: ["rosine", "aymard"], coordinateur: "rosine",
+                    competences: ["Qualité", "Conformité"], referentiels: ["RGPD", "Loi 2024/017"],
+                    echeance: "2025-11-05", transitions: 0, googleDoc: "https://docs.google.com/document/d/1ABC-GP31"
                 }
             ],
             contributeurs: [
@@ -250,6 +282,33 @@ class ThinkTankApp {
         // Setup forms and other interactions
         this.setupForms();
         this.setupModals();
+
+        // Import/Export handlers
+        const exportExcelBtn = document.getElementById('exportExcel');
+        if (exportExcelBtn) {
+            exportExcelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                try {
+                    this.exportExcelMultiSheets();
+                } catch (err) {
+                    console.error('Export Excel failed:', err);
+                    alert("Échec de l'export Excel. Vérifiez la console.");
+                }
+            });
+        }
+
+        const exportJsonBtn = document.getElementById('exportJson');
+        if (exportJsonBtn) {
+            exportJsonBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                try {
+                    this.exportJsonData();
+                } catch (err) {
+                    console.error('Export JSON failed:', err);
+                    alert("Échec de l'export JSON. Vérifiez la console.");
+                }
+            });
+        }
         
         console.log('Event listeners setup complete');
     }
@@ -1069,7 +1128,89 @@ class ThinkTankApp {
 
     loadAffectations() {
         console.log('Loading Affectations...');
-        // Implementation similar to existing but with proper error handling
+        const tableBody = document.getElementById('affectationsTableBody');
+        const searchInput = document.getElementById('searchAffectations');
+        if (!tableBody) return;
+
+        const contributors = this.data.contributeurs;
+
+        const renderRows = (filter = '') => {
+            const rowsData = this.data.sousSections
+                .filter(s => !filter || (s.id.toLowerCase().includes(filter) || s.titre.toLowerCase().includes(filter)));
+
+            tableBody.innerHTML = rowsData.map(section => {
+                const coordOptions = contributors.map(c =>
+                    `<option value="${c.id}" ${section.coordinateur === c.id ? 'selected' : ''}>${c.nom}</option>`
+                ).join('');
+
+                const contribOptions = contributors.map(c =>
+                    `<option value="${c.id}" ${section.contributeurs.includes(c.id) ? 'selected' : ''}>${c.nom}</option>`
+                ).join('');
+
+                const risk = this.calculateRisk(section);
+                const xp = this.calculateXP(section);
+
+                return `
+                    <tr data-section="${section.id}">
+                        <td>${section.id}</td>
+                        <td>${section.titre}</td>
+                        <td>${section.document}</td>
+                        <td>${section.section} - ${section.sectionTitre}</td>
+                        <td>
+                            <select class="form-control form-control--sm coord-select">
+                                <option value="">Non assigné</option>
+                                ${coordOptions}
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control form-control--sm contrib-select" multiple size="3">
+                                ${contribOptions}
+                            </select>
+                        </td>
+                        <td>${section.statut}</td>
+                        <td>${this.formatDate(section.echeance)}</td>
+                        <td><span class="kanban-card__risk kanban-card__risk--${risk}">
+                            ${this.data.config.riskConfig.labels[risk]}
+                        </span></td>
+                        <td>${xp}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Bind change events
+            rowsData.forEach(section => {
+                const row = tableBody.querySelector(`tr[data-section="${section.id}"]`);
+                if (!row) return;
+                const coordSelect = row.querySelector('.coord-select');
+                const contribSelect = row.querySelector('.contrib-select');
+
+                if (coordSelect) {
+                    coordSelect.value = section.coordinateur || '';
+                    coordSelect.addEventListener('change', () => {
+                        section.coordinateur = coordSelect.value;
+                        this.updateStats();
+                        showNotification(`Coordinateur mis à jour pour ${section.id}`, 'success');
+                    });
+                }
+
+                if (contribSelect) {
+                    contribSelect.addEventListener('change', () => {
+                        const selected = Array.from(contribSelect.selectedOptions).map(o => o.value);
+                        section.contributeurs = selected;
+                        this.updateStats();
+                        showNotification(`Contributeurs mis à jour pour ${section.id}`, 'success');
+                    });
+                }
+            });
+        };
+
+        renderRows();
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                renderRows(e.target.value.trim().toLowerCase());
+            });
+        }
     }
 
     loadRessources() {
@@ -1121,6 +1262,115 @@ class ThinkTankApp {
         updateStat('statTotalTransitions', totalTransitions);
         updateStat('statHighRiskSections', highRiskSections);
         updateStat('statAvgPerformance', '4.2/5');
+    }
+
+    // Export helpers
+    exportExcelMultiSheets() {
+        if (typeof XLSX === 'undefined') {
+            alert('La bibliothèque Excel (XLSX) est introuvable.');
+            return;
+        }
+
+        const wb = XLSX.utils.book_new();
+
+        const normalize = (v) => Array.isArray(v) ? v.join('; ') : (v ?? '');
+
+        // Sous-sections
+        const sousSectionsData = this.data.sousSections.map(s => ({
+            id: s.id,
+            titre: s.titre,
+            description: s.description,
+            document: s.document,
+            section: s.section,
+            sectionTitre: s.sectionTitre,
+            statut: s.statut,
+            contributeurs: normalize(s.contributeurs),
+            coordinateur: s.coordinateur,
+            competences: normalize(s.competences),
+            referentiels: normalize(s.referentiels),
+            echeance: s.echeance,
+            transitions: s.transitions,
+            googleDoc: s.googleDoc
+        }));
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sousSectionsData), 'SousSections');
+
+        // Contributeurs
+        const contribData = this.data.contributeurs.map(c => ({
+            id: c.id,
+            nom: c.nom,
+            email: c.email,
+            linkedin: c.linkedin,
+            competences: normalize(c.competences),
+            secteurs: normalize(c.secteurs),
+            experience: c.experience,
+            disponibilite: c.disponibilite,
+            role: c.role,
+            xp: c.xp,
+            badges: normalize(c.badges),
+            bio: c.bio
+        }));
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(contribData), 'Contributeurs');
+
+        // Statuts
+        const statusesData = this.data.config.statuses.map(s => ({ statut: s }));
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(statusesData), 'Statuses');
+
+        // Config Projet
+        const proj = this.data.config.project;
+        XLSX.utils.book_append_sheet(
+            wb,
+            XLSX.utils.json_to_sheet([{ 
+                name: proj.name, 
+                startDate: proj.startDate, 
+                deadline: proj.deadline, 
+                description: proj.description 
+            }]),
+            'Config_Project'
+        );
+
+        // RiskConfig
+        const rc = this.data.config.riskConfig;
+        XLSX.utils.book_append_sheet(
+            wb,
+            XLSX.utils.json_to_sheet([{ 
+                threshold_eleve: rc.thresholds.eleve, 
+                threshold_moyen: rc.thresholds.moyen, 
+                label_eleve: rc.labels.eleve, 
+                label_moyen: rc.labels.moyen, 
+                label_faible: rc.labels.faible 
+            }]),
+            'RiskConfig'
+        );
+
+        // Partners
+        const partnersData = this.data.config.partners.map(p => ({ name: p.name, logo: p.logo, url: p.url }));
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(partnersData), 'Partners');
+
+        // Quiz
+        const quizData = this.data.quiz.questions.map(q => ({
+            id: q.id,
+            question: q.question,
+            options: normalize(q.options),
+            correctIndex: q.correct
+        }));
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(quizData), 'Quiz');
+
+        const fileName = `thinktank_export_${new Date().toISOString().slice(0,10)}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+        showNotification(`Export Excel généré: ${fileName}`, 'success');
+    }
+
+    exportJsonData() {
+        const blob = new Blob([JSON.stringify(this.data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `thinktank_export_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification('Export JSON généré', 'success');
     }
 
     // Utility methods
