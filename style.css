@@ -1718,6 +1718,98 @@ select.form-control {
   margin-bottom: var(--space-8);
 }
 
+/* Timeline enhanced styling */
+.timeline-section .timeline {
+  background: rgba(var(--color-brown-600-rgb), 0.03);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-24);
+  margin-left: var(--space-8);
+}
+
+/* Vertical line adjustment for nicer spacing */
+.timeline::before {
+  left: 48px;
+  background: var(--color-border);
+}
+
+/* Items align as modern milestone cards */
+.timeline-item {
+  padding-left: 80px;
+  margin-bottom: var(--space-32);
+}
+
+/* Milestone node */
+.timeline-item::before {
+  left: 44px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+}
+
+/* First item as completed (check) */
+.timeline-item:first-child::before {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.timeline-item:first-child::after {
+  content: '✓';
+  position: absolute;
+  left: 46px;
+  top: 6px;
+  font-size: 12px;
+  color: var(--color-btn-primary-text);
+}
+
+/* Next item as in-progress (accent outline) */
+.timeline-item:nth-child(2)::before {
+  border-color: var(--color-warning);
+}
+
+/* Date label styling */
+.timeline-date {
+  color: var(--color-warning);
+  font-weight: var(--font-weight-semibold);
+  margin-top: var(--space-4);
+}
+
+/* Card styling for content */
+.timeline-content {
+  background: var(--color-background);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-16);
+  box-shadow: var(--shadow-inset-sm);
+}
+
+/* Progress cursor across the timeline */
+.timeline-cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-warning);
+  opacity: 0.7;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+.timeline-cursor::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-warning);
+  border-radius: 50%;
+}
+
+.timeline-metrics {
+  margin-left: 80px;
+  color: var(--color-text-secondary);
+}
+
 /* Partners */
 .partners-grid {
   display: grid;
