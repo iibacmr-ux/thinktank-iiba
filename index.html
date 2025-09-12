@@ -34,7 +34,7 @@
                         Admin
                     </button>
                 </nav>
-                <div class="language-selector">
+                <div class="language-selector" style="display:none">
                     <select id="languageSelect" class="form-control form-control--sm" aria-label="Sélecteur de langue">
                         <option value="fr">🇫🇷 Français</option>
                         <option value="en">🇬🇧 English</option>
@@ -274,52 +274,7 @@
                         <h3>Ressources par document</h3>
                         <div class="ressources-documents" id="ressourcesDocuments"></div>
                         
-                        <div class="benchmarks-section">
-                            <h4>Benchmarks et références</h4>
-                            <div class="benchmarks-grid">
-                                <a href="https://dama.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/4A90E2/FFFFFF?text=DAMA" alt="DAMA">
-                                    <span>DAMA-DMBOK</span>
-                                </a>
-                                <a href="https://iiba.org/babok" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/00313C/FFFFFF?text=BABOK" alt="BABOK">
-                                    <span>BABOK v3</span>
-                                </a>
-                                <a href="https://cobit.isaca.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/E74C3C/FFFFFF?text=COBIT" alt="COBIT">
-                                    <span>COBIT 2019</span>
-                                </a>
-                                <a href="https://iso.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/2ECC71/FFFFFF?text=ISO" alt="ISO">
-                                    <span>ISO 27001</span>
-                                </a>
-                                <a href="https://imf.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/F39C12/FFFFFF?text=FMI" alt="FMI">
-                                    <span>FMI</span>
-                                </a>
-                                <a href="https://worldbank.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/3498DB/FFFFFF?text=WB" alt="World Bank">
-                                    <span>Banque Mondiale</span>
-                                </a>
-                                <a href="https://un.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/34495E/FFFFFF?text=ONU" alt="ONU">
-                                    <span>ONU</span>
-                                </a>
-                                <a href="https://weforum.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/8E44AD/FFFFFF?text=WEF" alt="WEF">
-                                    <span>WEF</span>
-                                </a>
-                                <a href="https://oecd.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/16A085/FFFFFF?text=OCDE" alt="OCDE">
-                                    <span>OCDE</span>
-                                </a>
-                                <a href="https://edmcouncil.org/dcam" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/E67E22/FFFFFF?text=DCAM" alt="DCAM">
-                                    <span>DCAM</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                                            </div>
                 </div>
             </div>
         </div>
@@ -495,7 +450,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">
-                                            <input type="checkbox" id="enableKanbanNotifications" checked> Notifications Kanban (drag & drop)
+                                            <input type="checkbox" id="enableKanbanNotifications"> Notifications Kanban (drag & drop)
                                         </label>
                                     </div>
                                     <button type="submit" class="btn btn--primary">Sauvegarder</button>
@@ -651,6 +606,56 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Contributeurs -->
+    <div id="contributorsModal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal__overlay" aria-hidden="true"></div>
+        <div class="modal__container" role="document">
+            <div class="modal__header">
+                <h3 id="contributorsModalTitle">Attribuer des contributeurs</h3>
+                <button class="modal__close" aria-label="Fermer" data-micromodal-close>&times;</button>
+            </div>
+            <div class="modal__content">
+                <div class="form-group">
+                    <input type="search" id="contributorsSearch" class="form-control" placeholder="Rechercher un contributeur...">
+                </div>
+                <div id="contributorsModalList"></div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary" data-micromodal-close>Annuler</button>
+                <button class="btn btn--primary" id="contributorsSave">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:24px; padding:24px 0; border-top:1px solid var(--color-border);">
+                <section>
+                    <h4>Contact</h4>
+                    <p>Alix NDJOCK</p>
+                    <p>📞 +237 657 29 99 58</p>
+                    <p>✉️ contact@cameroon.iiba.org</p>
+                </section>
+                <section>
+                    <h4>Réseaux sociaux</h4>
+                    <p><a href="https://www.linkedin.com/company/iiba-cameroon-chapter/" target="_blank">LinkedIn</a></p>
+                    <p><a href="https://www.facebook.com/" target="_blank">Facebook</a></p>
+                    <p><a href="https://cameroon.iiba.org/" target="_blank">Site web</a></p>
+                </section>
+                <section>
+                    <h4>Adresse</h4>
+                    <p>Immeuble Jaune face Station Blessing</p>
+                    <p>vers Sic Cacaos</p>
+                    <p>Douala - Cameroun</p>
+                </section>
+            </div>
+            <div style="text-align:center; padding:12px 0; color: var(--color-text-secondary); border-top:1px solid var(--color-border);">
+                © 2025 IIBA Cameroun Chapter × GECAM. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
 
     <script src="app.js"></script>
 </body>
