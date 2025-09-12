@@ -1255,7 +1255,11 @@ select.form-control {
 }
 
 .avatar--rosine {
-  background: linear-gradient(135deg, #E74C3C, #8E44AD);
+  background-image: url("https://media.licdn.com/dms/image/v2/D4E03AQGvy0DqGUdcDQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1718373155509?e=1760572800&v=beta&t=v_DKy3g-TRLrFPJMf4O-DpbUhgbC7Np-QowSRoHtkUM");
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%; /* rend l'image ovale/circulaire */
+  overflow: hidden;
 }
 
 .avatar--william {
