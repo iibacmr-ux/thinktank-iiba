@@ -1,368 +1,55 @@
 {
-  "project": {
-    "name": "ThinkTank IIBA × GECAM",
-    "deadline": "2025-12-01",
-    "startDate": "2025-09-11",
-    "description": "Rédaction collaborative du 1er Livre Blanc de la Business Analyse au Cameroun",
-    "driveFolder": "https://drive.google.com/drive/folders/1ABC123",
-    "sheetsUrl": "https://docs.google.com/spreadsheets/d/1XYZ789"
-  },
-  "language": {
-    "current": "fr",
-    "available": [
-      "fr",
-      "en"
-    ]
-  },
-  "navigation": {
-    "accueil": {
-      "fr": "Accueil",
-      "en": "Home"
-    },
-    "dashboard": {
-      "fr": "Dashboard",
-      "en": "Dashboard"
-    },
-    "contributeurs": {
-      "fr": "Contributeurs",
-      "en": "Contributors"
-    },
-    "info": {
-      "fr": "Info",
-      "en": "Info"
-    },
-    "admin": {
-      "fr": "Admin",
-      "en": "Admin"
-    }
-  },
-  "statuses": [
-    "Backlog",
-    "À faire",
-    "En cours",
-    "En revue",
-    "Terminé"
-  ],
-  "riskConfig": {
-    "thresholds": {
-      "eleve": 3,
-      "moyen": 10
-    },
-    "labels": {
-      "eleve": "élevé",
-      "moyen": "moyen",
-      "faible": "faible"
-    },
-    "tooltip": "Calcul automatique basé sur l'échéance: élevé (≤3j), moyen (4-10j), faible (>10j)"
-  },
-  "xpConfig": {
-    "factors": {
-      "completion": 10,
-      "coordination": 5,
-      "contribution": 2
-    },
-    "tooltip": "XP = (sections terminées × 10) + (sections coordonnées × 5) + (contributions × 2)"
-  },
-  "filters": {
-    "document": {
-      "label": {
-        "fr": "Document",
-        "en": "Document"
-      },
-      "field": "document",
-      "options": [
-        "",
-        "Livre Blanc",
-        "Guide Pratique"
+  "sousSections": [
+    {
+      "id": "LB-6.1",
+      "titre": "Principes Data Viz",
+      "document": "Livre Blanc",
+      "section": 6,
+      "sectionTitre": "Data Visualisation",
+      "statut": "A_faire",
+      "coordinateur": "u1",
+      "contributeurs": [],
+      "referentiels": [
+        {
+          "label": "ISO 8000",
+          "url": "https://www.iso.org/standard/50798.html"
+        }
       ]
     },
-    "coordinateur": {
-      "label": {
-        "fr": "Coordinateur",
-        "en": "Coordinator"
-      },
-      "field": "coordinateur",
-      "options": "dynamic"
-    },
-    "risque": {
-      "label": {
-        "fr": "Risque",
-        "en": "Risk"
-      },
-      "field": "risque",
-      "options": [
-        "",
-        "faible",
-        "moyen",
-        "élevé"
+    {
+      "id": "GP-1.1",
+      "titre": "Gouvernance",
+      "document": "Guide Pratique",
+      "section": 1,
+      "sectionTitre": "Gouvernance",
+      "statut": "A_faire",
+      "coordinateur": "u2",
+      "contributeurs": [],
+      "referentiels": [
+        {
+          "label": "DAMA-DMBOK",
+          "url": "https://www.dama.org/cpages/body-of-knowledge"
+        }
       ]
-    },
-    "statut": {
-      "label": {
-        "fr": "Statut",
-        "en": "Status"
-      },
-      "field": "statut",
-      "options": "dynamic"
-    }
-  },
-  "notifications": {
-    "whatsapp": {
-      "enabled": true,
-      "template": "https://wa.me/?text=🔄%20Mise%20à%20jour%20ThinkTank%20IIBA%20×%20GECAM%0A%0A📋%20Section%3A%20{title}%0A📊%20Nouveau%20statut%3A%20{status}%0A👤%20Coordinateur%3A%20{coordinator}%0A📅%20Échéance%3A%20{echeance}%0A%0A🔗%20Dashboard%3A%20{dashboardUrl}"
-    },
-    "email": {
-      "enabled": true,
-      "template": "mailto:contact@cameroon.iiba.org?subject=Mise%20à%20jour%20section%20{id}&body=Bonjour,%0A%0ALa%20section%20{id}%20:%20{title}%20a%20été%20mise%20à%20jour.%0A%0ANouveau%20statut%20:%20{status}%0ACoordinateur%20:%20{coordinator}%0AÉchéance%20:%20{echeance}%0A%0ACordialement"
-    },
-    "emailjs": {
-      "enabled": false,
-      "serviceId": "",
-      "templateId": "",
-      "publicKey": "",
-      "template": {
-        "subject": "Mise à jour section {id}",
-        "body": "La section {title} a changé de statut vers {status}"
-      }
-    }
-  },
-  "quiz": {
-    "questions": [
-      {
-        "question": {
-          "fr": "Quel aspect vous motive le plus dans ce projet ?",
-          "en": "What motivates you most in this project?"
-        },
-        "options": {
-          "fr": [
-            "Apprendre nouvelles compétences",
-            "Contribuer écosystème BA",
-            "Développer réseau",
-            "Valoriser CV"
-          ],
-          "en": [
-            "Learn new skills",
-            "Contribute to BA ecosystem",
-            "Develop network",
-            "Enhance CV"
-          ]
-        },
-        "badges": [
-          "🎓 Apprenant",
-          "🌍 Contributeur",
-          "🤝 Networker",
-          "💼 Professionnel"
-        ]
-      },
-      {
-        "question": {
-          "fr": "Dans quel domaine souhaitez-vous contribuer ?",
-          "en": "In which area would you like to contribute?"
-        },
-        "options": {
-          "fr": [
-            "Recherche & benchmarks",
-            "Rédaction & synthèse",
-            "Visualisation & design",
-            "Relecture & qualité"
-          ],
-          "en": [
-            "Research & benchmarks",
-            "Writing & synthesis",
-            "Visualization & design",
-            "Review & quality"
-          ]
-        },
-        "badges": [
-          "🔍 Chercheur",
-          "✍️ Rédacteur",
-          "🎨 Designer",
-          "✅ Reviewer"
-        ]
-      },
-      {
-        "question": {
-          "fr": "Combien d'heures pouvez-vous consacrer par semaine ?",
-          "en": "How many hours per week can you dedicate?"
-        },
-        "options": {
-          "fr": [
-            "2-4 heures",
-            "5-8 heures",
-            "9-12 heures",
-            "Plus de 12 heures"
-          ],
-          "en": [
-            "2-4 hours",
-            "5-8 hours",
-            "9-12 hours",
-            "More than 12 hours"
-          ]
-        },
-        "badges": [
-          "⭐ Contributeur",
-          "🌟 Actif",
-          "💫 Engagé",
-          "🚀 Champion"
-        ]
-      }
-    ]
-  },
-  "colors": {
-    "william": "#00313C",
-    "rosine": "#D86018",
-    "olivia": "#00778B",
-    "derrick": "#D86018",
-    "florence": "#00313C",
-    "julie": "#00778B",
-    "stephane": "#D86018",
-    "elise": "#00313C",
-    "aymard": "#00778B",
-    "eddy": "#D86018"
-  },
-  "dateFormat": "fr-FR",
-  "partners": [
-    {
-      "name": "IIBA International",
-      "logo": "https://via.placeholder.com/120x60/00313C/FFFFFF?text=IIBA",
-      "url": "https://iiba.org",
-      "description": {
-        "fr": "Institut International d'Analyse d'Affaires",
-        "en": "International Institute of Business Analysis"
-      }
-    },
-    {
-      "name": "GECAM",
-      "logo": "https://via.placeholder.com/120x60/D86018/FFFFFF?text=GECAM",
-      "url": "https://gecam.org",
-      "description": {
-        "fr": "Groupement des Entreprises du Cameroun",
-        "en": "Cameroon Business Group"
-      }
-    },
-    {
-      "name": "MINPOSTEL",
-      "logo": "https://via.placeholder.com/120x60/00778B/FFFFFF?text=MINPOSTEL",
-      "url": "https://minpostel.gov.cm",
-      "description": {
-        "fr": "Ministère des Postes et Télécommunications",
-        "en": "Ministry of Posts and Telecommunications"
-      }
     }
   ],
-  "benchmarks": [
+  "contributeurs": [
     {
-      "name": "DAMA-DMBOK",
-      "logo": "https://via.placeholder.com/80x40/4A90E2/FFFFFF?text=DAMA",
-      "url": "https://dama.org/content/body-knowledge-dmbok"
+      "id": "u1",
+      "nom": "Rosine"
     },
     {
-      "name": "BABOK v3",
-      "logo": "https://via.placeholder.com/80x40/00313C/FFFFFF?text=BABOK",
-      "url": "https://iiba.org/business-analysis-body-of-knowledge/"
-    },
-    {
-      "name": "COBIT 2019",
-      "logo": "https://via.placeholder.com/80x40/E94B3C/FFFFFF?text=COBIT",
-      "url": "https://www.isaca.org/resources/cobit"
-    },
-    {
-      "name": "ISO 8000",
-      "logo": "https://via.placeholder.com/80x40/50C878/FFFFFF?text=ISO",
-      "url": "https://www.iso.org/standard/50798.html"
-    },
-    {
-      "name": "DCAM",
-      "logo": "https://via.placeholder.com/80x40/9966CC/FFFFFF?text=DCAM",
-      "url": "https://cmmiinstitute.com/dcam"
-    },
-    {
-      "name": "FMI",
-      "logo": "https://via.placeholder.com/80x40/1E90FF/FFFFFF?text=IMF",
-      "url": "https://www.imf.org"
-    },
-    {
-      "name": "Banque Mondiale",
-      "logo": "https://via.placeholder.com/80x40/2E8B57/FFFFFF?text=WB",
-      "url": "https://worldbank.org"
-    },
-    {
-      "name": "ONU",
-      "logo": "https://via.placeholder.com/80x40/87CEEB/FFFFFF?text=UN",
-      "url": "https://un.org"
-    },
-    {
-      "name": "WEF",
-      "logo": "https://via.placeholder.com/80x40/FF6347/FFFFFF?text=WEF",
-      "url": "https://weforum.org"
-    },
-    {
-      "name": "OCDE",
-      "logo": "https://via.placeholder.com/80x40/4682B4/FFFFFF?text=OECD",
-      "url": "https://oecd.org"
+      "id": "u2",
+      "nom": "William"
     }
   ],
-  "tooltips": {
-    "xp": {
-      "fr": "XP calculé automatiquement : (sections terminées × 10) + (sections coordonnées × 5) + (contributions × 2)",
-      "en": "XP calculated automatically: (completed sections × 10) + (coordinated sections × 5) + (contributions × 2)"
-    },
-    "risque": {
-      "fr": "Risque calculé automatiquement basé sur l'échéance : élevé (≤3 jours), moyen (4-10 jours), faible (>10 jours)",
-      "en": "Risk calculated automatically based on deadline: high (≤3 days), medium (4-10 days), low (>10 days)"
-    },
-    "transitions": {
-      "fr": "Nombre de changements de statut effectués sur cette sous-section",
-      "en": "Number of status changes made on this sub-section"
+  "jalons": [
+    {
+      "id": "M1",
+      "titre": "Setup",
+      "date": "2025-09-17",
+      "owner": "Rosine",
+      "statut": "OK"
     }
-  },
-  "exportConfig": {
-    "filename": "ThinkTank_IIBA_GECAM_Export",
-    "sheets": [
-      "Sous-sections",
-      "Contributeurs",
-      "Jalons",
-      "Configuration"
-    ]
-  },
-  "accessibility": {
-    "focusTrap": true,
-    "ariaLabels": true,
-    "highContrast": false,
-    "keyboardNav": true
-  },
-  "info": {
-    "mission": {
-      "fr": "Rédiger collaborativement le premier référentiel national de gouvernance des données au Cameroun, en s'appuyant sur les standards internationaux et l'expertise locale.",
-      "en": "Collaboratively write the first national data governance framework in Cameroon, based on international standards and local expertise."
-    },
-    "objectives": [
-      {
-        "fr": "Créer un Livre Blanc de référence sur la Business Analyse",
-        "en": "Create a reference White Paper on Business Analysis"
-      },
-      {
-        "fr": "Développer un Guide Pratique adapté aux entreprises camerounaises",
-        "en": "Develop a Practical Guide adapted to Cameroonian companies"
-      },
-      {
-        "fr": "Former une communauté d'experts en gouvernance des données",
-        "en": "Build a community of data governance experts"
-      }
-    ],
-    "charter": {
-      "standards": [
-        "BABOK v3",
-        "DAMA-DMBOK",
-        "COBIT 2019",
-        "ISO 27001"
-      ],
-      "compliance": [
-        "RGPD",
-        "Loi 2024/017",
-        "Standards CEMAC"
-      ],
-      "registration": "https://forms.google.com/xyz123"
-    }
-  }
+  ]
 }
