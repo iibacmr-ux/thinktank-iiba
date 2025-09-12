@@ -143,32 +143,47 @@ class ThinkTankApp {
                     bio: "Président IIBA Cameroun, expert BABOK v3"
                 },
                 {
-                    id: "rosine", nom: "Rosine BELLA", email: "rosine@gecam.org",
+                    id: "rosine", nom: "Rosine TAPSOU", email: "rosine@gecam.org",
                     linkedin: "rosine-bella", competences: ["Business Analyst", "Data Steward", "Gouvernance"],
                     secteurs: ["Finance", "Industrie"], experience: 8, disponibilite: 12,
-                    role: "Admin", xp: 48, badges: ["Coordinateur Expert", "Pionnier"],
+                    role: "Admin", xp: 48, badges: ["Coordinatrice Expert", "Pionnière"],
                     bio: "Représentante IIBA au GECAM, experte gouvernance"
                 },
                 {
-                    id: "julie", nom: "Julie MBANG", email: "julie@healthtech.cm",
+                    id: "julie", nom: "Olivia N.Y.", email: "julie@healthtech.cm",
                     linkedin: "julie-mbang", competences: ["Business Analyst", "Expert Santé", "Interopérabilité"],
                     secteurs: ["Santé", "EdTech"], experience: 6, disponibilite: 10,
                     role: "Coordinateur", xp: 32, badges: ["Expert Santé", "Innovateur"],
                     bio: "Spécialiste télésanté et interopérabilité HL7/FHIR"
                 },
                 {
-                    id: "aymard", nom: "Aymard KAMDEM", email: "aymard@fintech.cm",
+                    id: "aymard", nom: "Valery Assena", email: "aymard@fintech.cm",
                     linkedin: "aymard-kamdem", competences: ["Business Analyst", "FinTech", "Mobile Money"],
                     secteurs: ["Finance", "Télécommunications"], experience: 7, disponibilite: 8,
-                    role: "Coordinateur", xp: 35, badges: ["Expert FinTech", "Mobile Money"],
+                    role: "Coordinatrice", xp: 35, badges: ["Expert FinTech", "Mobile Money"],
                     bio: "Consultant senior en transformation digitale financière"
                 },
                 {
-                    id: "florence", nom: "Florence NDJIKI", email: "florence@consulting.cm",
+                    id: "florence", nom: "Stéphane Baondo", email: "florence@consulting.cm",
                     linkedin: "florence-ndjiki", competences: ["Business Analyst", "Méthodologie", "Formation"],
                     secteurs: ["Consulting", "Formation"], experience: 5, disponibilite: 12,
-                    role: "Coordinateur", xp: 28, badges: ["Formatrice", "Méthodologie"],
-                    bio: "Consultante en organisation et méthodologies"
+                    role: "Contributeur", xp: 28, badges: ["Formateur", "Méthodologie"],
+                    bio: "Consultant en organisation et méthodologies"
+                },
+                {
+                    id: "julie_mahleu", nom: "Julie Mahleu", email: "",
+                    linkedin: "", competences: ["Contributeur"], secteurs: [], experience: 0, disponibilite: 0,
+                    role: "Contributeur", xp: 10, badges: [], bio: ""
+                },
+                {
+                    id: "linda", nom: "Linda", email: "",
+                    linkedin: "", competences: ["Contributeur"], secteurs: [], experience: 0, disponibilite: 0,
+                    role: "Contributeur", xp: 10, badges: [], bio: ""
+                },
+                {
+                    id: "derick", nom: "Derick TAMBI", email: "",
+                    linkedin: "", competences: ["Contributeur"], secteurs: [], experience: 0, disponibilite: 0,
+                    role: "Contributeur", xp: 10, badges: [], bio: ""
                 }
             ],
             quiz: {
@@ -769,7 +784,7 @@ class ThinkTankApp {
             case 'dashboard':
                 if (subtabId === 'kanban') this.loadKanbanBoard();
                 if (subtabId === 'heatmap') this.loadHeatmap();
-                if (subtabId === 'analytics') this.loadAnalytics();
+                if (subtabId === 'analytics') this.refreshAnalytics();
                 break;
             case 'contributeurs':
                 if (subtabId === 'profils') this.loadProfiles();
@@ -1072,6 +1087,17 @@ class ThinkTankApp {
             this.loadBurndownChart();
             this.loadContributorRanking();
         }, 100);
+    }
+
+    refreshAnalytics() {
+        const ids = ['statusChart', 'progressChart', 'burndownChart'];
+        ids.forEach(id => {
+            const old = document.getElementById(id);
+            if (!old) return;
+            const parent = old.parentNode;
+            if (parent) parent.innerHTML = `<canvas id="${id}"></canvas>`;
+        });
+        this.loadAnalytics();
     }
 
     loadStatusChart() {
@@ -1398,18 +1424,45 @@ class ThinkTankApp {
         container.innerHTML = documents.map(doc => {
             const prog = getDocProgress(doc);
             const sections = this.data.sousSections.filter(s => s.document === doc);
-            const sectionsHTML = sections.map(s => `
+
+            const refMap = {
+                'DAMA-DMBOK': 'https://www.dama.org/',
+                'BABOK v3': 'https://www.iiba.org/standards-and-resources/babok/',
+                'COBIT 2019': 'https://www.isaca.org/resources/cobit',
+                'ISO 27001': 'https://www.iso.org/isoiec-27001-information-security.html',
+                'FMI': 'https://www.imf.org',
+                'Banque Mondiale': 'https://www.worldbank.org',
+                'ONU': 'https://www.un.org',
+                'WEF': 'https://www.weforum.org',
+                'OCDE': 'https://www.oecd.org',
+                'DCAM': 'https://edmcouncil.org/dcam',
+                'RGPD': 'https://eur-lex.europa.eu/eli/reg/2016/679/oj',
+                'Loi 2024/017': '#',
+                'HL7/FHIR': 'https://www.hl7.org/fhir/',
+                'OMS Digital Health': 'https://www.who.int/health-topics/digital-health',
+                'MTN Money': '#',
+                'Orange Money': '#',
+                'UNESCO': 'https://www.unesco.org',
+                'Learning Analytics': 'https://www.solaresearch.org/initiatives/journals/'
+            };
+
+            const sectionsHTML = sections.map(s => {
+                const refs = (s.referentiels || []).map(r => {
+                    const url = refMap[r] || '#';
+                    return `<a href="${url}" target="_blank" class="btn btn--outline btn--sm" style="margin-right:6px">${r}</a>`;
+                }).join('');
+                return `
                 <div class="ressource-section">
                     <div class="ressource-section__info">
                         <div class="ressource-section__id">${s.id}</div>
                         <div class="ressource-section__title">${s.titre}</div>
+                        <div class="ressource-section__refs">${refs}</div>
                     </div>
                     <div class="ressource-section__actions">
-                        ${s.googleDoc ? `<a href="${s.googleDoc}" target="_blank" class="btn btn--outline btn--sm">Google Doc</a>` : ''}
-                        <button class="btn btn--primary btn--sm" onclick="openGoogleDoc('${s.googleDoc || '#'}')">Ouvrir</button>
+                        ${s.googleDoc ? `<a href="${s.googleDoc}" target="_blank" class="btn btn--primary btn--sm">Google Doc</a>` : ''}
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
 
             return `
                 <div class="ressource-document">
