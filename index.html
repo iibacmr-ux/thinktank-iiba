@@ -55,15 +55,27 @@
                         <div class="hero__stats">
                             <div class="stat">
                                 <span class="stat__value" id="totalSections">48</span>
-                                <span class="stat__label">Sous-sections</span>
+                                <span class="stat__label">Sous-sections
+                                    <a href="#" class="stat__link" onclick="window.thinkTankApp && window.thinkTankApp.switchTab('info')">ℹ️</a>
+                                </span>
                             </div>
                             <div class="stat">
                                 <span class="stat__value" id="totalContributeurs">10</span>
-                                <span class="stat__label">Contributeurs</span>
+                                <span class="stat__label">Contributeurs
+                                    <a href="#" class="stat__link" onclick="window.thinkTankApp && window.thinkTankApp.switchTab('contributeurs')">ℹ️</a>
+                                </span>
                             </div>
                             <div class="stat">
-                                <span class="stat__value" id="progression">12%</span>
-                                <span class="stat__label">Progression</span>
+                                <span class="stat__value" id="progressionLB">0%</span>
+                                <span class="stat__label">PROGRESSION LIVRE BLANC
+                                    <a href="#" class="stat__link" onclick="window.thinkTankApp && window.thinkTankApp.switchTab('dashboard'); window.thinkTankApp.switchSubTab('dashboard','analytics')">📊</a>
+                                </span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat__value" id="progressionGP">0%</span>
+                                <span class="stat__label">PROGRESSION GUIDE PRATIQUE
+                                    <a href="#" class="stat__link" onclick="window.thinkTankApp && window.thinkTankApp.switchTab('dashboard'); window.thinkTankApp.switchSubTab('dashboard','analytics')">📊</a>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -71,6 +83,32 @@
             </div>
 
             <div class="container">
+                <!-- Profil Rosine BELLA -->
+                <section class="profile-spotlight">
+                    <div class="card">
+                        <div class="card__body">
+                            <div class="profile-spotlight__content">
+                                <div class="avatar avatar--lg avatar--rosine"></div>
+                                <div class="profile-spotlight__info">
+                                    <h4>Rosine TAPSOU</h4>
+                                    <p>Représentante IIBA au GECAM, Coordinatrice</p>
+                                    <div class="badges">
+                                        <span class="badge badge--primary">Coordinatrice Expert</span>
+                                        <span class="badge badge--secondary">Pionnière</span>
+                                    </div>
+                                    <p class="profile-spotlight__bio">Experte en gouvernance des données et Business Analyse avec 8 ans d'expérience dans les secteurs Finance et Industrie.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Top sections prioritaires -->
+                <section class="priorities-section">
+                    <h3>Sections prioritaires</h3>
+                    <div class="priorities-grid" id="prioritiesList"></div>
+                </section>
+
                 <!-- Quiz Section -->
                 <section class="quiz-section">
                     <div class="card">
@@ -81,61 +119,13 @@
                     </div>
                 </section>
 
-                <!-- Formulaire de candidature -->
+                <!-- Candidature: redirection Google Forms -->
                 <section class="candidature-section">
                     <div class="card">
                         <div class="card__body">
                             <h3>Rejoignez l'équipe</h3>
-                            <form id="candidatureForm">
-                                <div class="form-group">
-                                    <label class="form-label" for="nom">Nom complet *</label>
-                                    <input type="text" id="nom" class="form-control" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="email">Email professionnel *</label>
-                                    <input type="email" id="email" class="form-control" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="experience">Années d'expérience *</label>
-                                    <select id="experience" class="form-control" required>
-                                        <option value="">Sélectionnez...</option>
-                                        <option value="0-2">0-2 ans</option>
-                                        <option value="3-5">3-5 ans</option>
-                                        <option value="5+">5+ ans</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="domaines">Domaines d'expertise</label>
-                                    <textarea id="domaines" class="form-control" rows="3" placeholder="Ex: Finance, Santé, Éducation..."></textarea>
-                                </div>
-                                <button type="submit" class="btn btn--primary">Soumettre ma candidature</button>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Top 6 sections prioritaires -->
-                <section class="priorities-section">
-                    <h3>Sections prioritaires</h3>
-                    <div class="priorities-grid" id="prioritiesList"></div>
-                </section>
-
-                <!-- Profil Rosine BELLA -->
-                <section class="profile-spotlight">
-                    <div class="card">
-                        <div class="card__body">
-                            <div class="profile-spotlight__content">
-                                <div class="avatar avatar--lg avatar--rosine"></div>
-                                <div class="profile-spotlight__info">
-                                    <h4>Rosine TAPSOU</h4>
-                                    <p>Représentante IIBA au GECAM, Coordinateur Expert</p>
-                                    <div class="badges">
-                                        <span class="badge badge--primary">Coordinateur Expert</span>
-                                        <span class="badge badge--secondary">Pionnier</span>
-                                    </div>
-                                    <p class="profile-spotlight__bio">Experte en gouvernance des données et Business Analyse avec 8 ans d'expérience dans les secteurs Finance et Industrie.</p>
-                                </div>
-                            </div>
+                            <p>Soumettez votre candidature via le formulaire Google.</p>
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeBG3ihN55tvoaD_gbLzoi81Fmrn6eN2rV3KHUPdntgNV2NOw/viewform?usp=sharing&ouid=110996219267002131665" target="_blank" class="btn btn--primary">Soumettre ma candidature</a>
                         </div>
                     </div>
                 </section>
@@ -447,7 +437,7 @@
                         <section class="registration-section">
                             <h3>Inscription et participation</h3>
                             <p>Pour contribuer au projet ou rejoindre la communauté des Business Analysts du Cameroun :</p>
-                            <a href="https://forms.google.com/inscription-thinktank" target="_blank" class="btn btn--primary">
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeBG3ihN55tvoaD_gbLzoi81Fmrn6eN2rV3KHUPdntgNV2NOw/viewform?usp=sharing&ouid=110996219267002131665" target="_blank" class="btn btn--primary">
                                 Formulaire d'inscription Google Forms
                             </a>
                         </section>
@@ -501,6 +491,11 @@
                                     <div class="form-group">
                                         <label class="form-label">
                                             <input type="checkbox" id="enableEmail" checked> Notifications Email
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <input type="checkbox" id="enableKanbanNotifications" checked> Notifications Kanban (drag & drop)
                                         </label>
                                     </div>
                                     <button type="submit" class="btn btn--primary">Sauvegarder</button>
