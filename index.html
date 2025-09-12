@@ -1,661 +1,141 @@
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThinkTank IIBA × GECAM</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ThinkTank IIBA × GECAM — App</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Libs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
+
+  <!-- Charge (optionnel) le JSON avant l'app -->
+  <script>
+    window.__CONFIG_JSON__ = null;
+    (async function () {
+      try {
+        const res = await fetch('config_complete.json', { cache: 'no-store' });
+        if (res.ok) window.__CONFIG_JSON__ = await res.json();
+      } catch (e) {
+        console.warn('JSON externe non chargé (optionnel):', e);
+      }
+    })();
+  </script>
+  <script src="app.js" defer></script>
 </head>
 <body>
-    <!-- Header avec navigation principale -->
-    <header class="header">
-        <div class="container">
-            <div class="header__nav">
-                <div class="header__logo">
-                    <h1>ThinkTank IIBA × GECAM</h1>
-                </div>
-                <nav class="nav">
-                    <button class="nav__btn nav__btn--active" data-tab="accueil" aria-label="Accueil">
-                        Accueil
-                    </button>
-                    <button class="nav__btn" data-tab="dashboard" aria-label="Dashboard">
-                        Dashboard
-                    </button>
-                    <button class="nav__btn" data-tab="contributeurs" aria-label="Contributeurs">
-                        Contributeurs
-                    </button>
-                    <button class="nav__btn" data-tab="info" aria-label="Info">
-                        Info
-                    </button>
-                    <button class="nav__btn" data-tab="admin" aria-label="Admin">
-                        Admin
-                    </button>
-                </nav>
-                <div class="language-selector">
-                    <select id="languageSelect" class="form-control form-control--sm" aria-label="Sélecteur de langue">
-                        <option value="fr">🇫🇷 Français</option>
-                        <option value="en">🇬🇧 English</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="main">
-        <!-- Onglet Accueil -->
-        <div id="accueil" class="tab-content tab-content--active">
-            <div class="hero">
-                <div class="container">
-                    <div class="hero__content">
-                        <h2 class="hero__title">1er Livre Blanc de la Business Analyse au Cameroun</h2>
-                        <p class="hero__description">Rédaction collaborative avec l'IIBA et le GECAM</p>
-                        <div class="hero__stats">
-                            <div class="stat">
-                                <span class="stat__value" id="totalSections">48</span>
-                                <span class="stat__label">Sous-sections</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat__value" id="totalContributeurs">10</span>
-                                <span class="stat__label">Contributeurs</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat__value" id="progression">12%</span>
-                                <span class="stat__label">Progression</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container">
-                <!-- Quiz Section -->
-                <section class="quiz-section">
-                    <div class="card">
-                        <div class="card__body">
-                            <h3>Quiz: Êtes-vous prêt pour la Business Analyse ?</h3>
-                            <div id="quizContainer"></div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Formulaire de candidature -->
-                <section class="candidature-section">
-                    <div class="card">
-                        <div class="card__body">
-                            <h3>Rejoignez l'équipe</h3>
-                            <form id="candidatureForm">
-                                <div class="form-group">
-                                    <label class="form-label" for="nom">Nom complet *</label>
-                                    <input type="text" id="nom" class="form-control" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="email">Email professionnel *</label>
-                                    <input type="email" id="email" class="form-control" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="experience">Années d'expérience *</label>
-                                    <select id="experience" class="form-control" required>
-                                        <option value="">Sélectionnez...</option>
-                                        <option value="0-2">0-2 ans</option>
-                                        <option value="3-5">3-5 ans</option>
-                                        <option value="5+">5+ ans</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label" for="domaines">Domaines d'expertise</label>
-                                    <textarea id="domaines" class="form-control" rows="3" placeholder="Ex: Finance, Santé, Éducation..."></textarea>
-                                </div>
-                                <button type="submit" class="btn btn--primary">Soumettre ma candidature</button>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Top 6 sections prioritaires -->
-                <section class="priorities-section">
-                    <h3>Sections prioritaires</h3>
-                    <div class="priorities-grid" id="prioritiesList"></div>
-                </section>
-
-                <!-- Profil Rosine BELLA -->
-                <section class="profile-spotlight">
-                    <div class="card">
-                        <div class="card__body">
-                            <div class="profile-spotlight__content">
-                                <div class="avatar avatar--lg avatar--rosine"></div>
-                                <div class="profile-spotlight__info">
-                                    <h4>Rosine BELLA</h4>
-                                    <p>Représentante IIBA au GECAM, Coordinateur Expert</p>
-                                    <div class="badges">
-                                        <span class="badge badge--primary">Coordinateur Expert</span>
-                                        <span class="badge badge--secondary">Pionnier</span>
-                                    </div>
-                                    <p class="profile-spotlight__bio">Experte en gouvernance des données et Business Analyse avec 8 ans d'expérience dans les secteurs Finance et Industrie.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </div>
-
-        <!-- Onglet Dashboard -->
-        <div id="dashboard" class="tab-content">
-            <div class="container">
-                <div class="dashboard-header">
-                    <h2>Dashboard</h2>
-                    <div class="sub-nav">
-                        <button class="sub-nav__btn sub-nav__btn--active" data-subtab="kanban">Kanban</button>
-                        <button class="sub-nav__btn" data-subtab="heatmap">Heatmap</button>
-                        <button class="sub-nav__btn" data-subtab="analytics">Analytics</button>
-                    </div>
-                </div>
-
-                <!-- Kanban -->
-                <div id="kanban" class="subtab-content subtab-content--active">
-                    <div class="filters">
-                        <div class="filters__group">
-                            <select id="filterDocument" class="form-control form-control--sm">
-                                <option value="">Tous les documents</option>
-                                <option value="Livre Blanc">Livre Blanc</option>
-                                <option value="Guide Pratique">Guide Pratique</option>
-                            </select>
-                            <select id="filterCoordinateur" class="form-control form-control--sm">
-                                <option value="">Tous les coordinateurs</option>
-                            </select>
-                            <select id="filterRisque" class="form-control form-control--sm">
-                                <option value="">Tous les risques</option>
-                                <option value="élevé">Risque élevé</option>
-                                <option value="moyen">Risque moyen</option>
-                                <option value="faible">Risque faible</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="kanban-board" id="kanbanBoard"></div>
-                </div>
-
-                <!-- Heatmap -->
-                <div id="heatmap" class="subtab-content">
-                    <div class="heatmap-container">
-                        <h3>Vue matricielle : Contributeurs × Documents</h3>
-                        <div class="heatmap-legend">
-                            <span class="legend-item"><span class="legend-color legend-color--low"></span>0-25%</span>
-                            <span class="legend-item"><span class="legend-color legend-color--medium"></span>25-75%</span>
-                            <span class="legend-item"><span class="legend-color legend-color--high"></span>75-100%</span>
-                        </div>
-                        <div class="heatmap-grid" id="heatmapGrid"></div>
-                    </div>
-                </div>
-
-                <!-- Analytics -->
-                <div id="analytics" class="subtab-content">
-                    <div class="analytics-grid">
-                        <div class="chart-container">
-                            <h4>Répartition par statut</h4>
-                            <div style="position: relative; height: 300px;">
-                                <canvas id="statusChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <h4>Progression par document</h4>
-                            <div style="position: relative; height: 300px;">
-                                <canvas id="progressChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <h4>Burndown Chart</h4>
-                            <div style="position: relative; height: 300px;">
-                                <canvas id="burndownChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <h4>Classement contributeurs par XP</h4>
-                            <div class="contributor-ranking" id="contributorRanking"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Onglet Contributeurs -->
-        <div id="contributeurs" class="tab-content">
-            <div class="container">
-                <div class="dashboard-header">
-                    <h2>Contributeurs</h2>
-                    <div class="sub-nav">
-                        <button class="sub-nav__btn sub-nav__btn--active" data-subtab="profils">Profils</button>
-                        <button class="sub-nav__btn" data-subtab="affectations">Affectations</button>
-                        <button class="sub-nav__btn" data-subtab="ressources">Ressources</button>
-                    </div>
-                </div>
-
-                <!-- Profils -->
-                <div id="profils" class="subtab-content subtab-content--active">
-                    <div class="profiles-sections">
-                        <section class="profiles-section">
-                            <h3>Administrateurs</h3>
-                            <div class="profiles-grid" id="adminProfiles"></div>
-                        </section>
-                        <section class="profiles-section">
-                            <h3>Coordinateurs</h3>
-                            <div class="profiles-grid" id="coordinatorProfiles"></div>
-                        </section>
-                        <section class="profiles-section">
-                            <h3>Contributeurs</h3>
-                            <div class="profiles-grid" id="contributorProfiles"></div>
-                        </section>
-                    </div>
-                </div>
-
-                <!-- Affectations -->
-                <div id="affectations" class="subtab-content">
-                    <div class="table-container">
-                        <div class="table-filters">
-                            <input type="search" id="searchAffectations" class="form-control" placeholder="Rechercher une section...">
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" id="affectationsTable">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Titre</th>
-                                        <th>Document</th>
-                                        <th>Section</th>
-                                        <th>Coordinateur</th>
-                                        <th>Contributeurs</th>
-                                        <th>Statut</th>
-                                        <th>Échéance</th>
-                                        <th>Risque</th>
-                                        <th>XP</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="affectationsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Ressources -->
-                <div id="ressources" class="subtab-content">
-                    <div class="ressources-container">
-                        <h3>Ressources par document</h3>
-                        <div class="ressources-documents" id="ressourcesDocuments"></div>
-                        
-                        <div class="benchmarks-section">
-                            <h4>Benchmarks et références</h4>
-                            <div class="benchmarks-grid">
-                                <a href="https://dama.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/4A90E2/FFFFFF?text=DAMA" alt="DAMA">
-                                    <span>DAMA-DMBOK</span>
-                                </a>
-                                <a href="https://iiba.org/babok" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/00313C/FFFFFF?text=BABOK" alt="BABOK">
-                                    <span>BABOK v3</span>
-                                </a>
-                                <a href="https://cobit.isaca.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/E74C3C/FFFFFF?text=COBIT" alt="COBIT">
-                                    <span>COBIT 2019</span>
-                                </a>
-                                <a href="https://iso.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/2ECC71/FFFFFF?text=ISO" alt="ISO">
-                                    <span>ISO 27001</span>
-                                </a>
-                                <a href="https://imf.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/F39C12/FFFFFF?text=FMI" alt="FMI">
-                                    <span>FMI</span>
-                                </a>
-                                <a href="https://worldbank.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/3498DB/FFFFFF?text=WB" alt="World Bank">
-                                    <span>Banque Mondiale</span>
-                                </a>
-                                <a href="https://un.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/34495E/FFFFFF?text=ONU" alt="ONU">
-                                    <span>ONU</span>
-                                </a>
-                                <a href="https://weforum.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/8E44AD/FFFFFF?text=WEF" alt="WEF">
-                                    <span>WEF</span>
-                                </a>
-                                <a href="https://oecd.org" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/16A085/FFFFFF?text=OCDE" alt="OCDE">
-                                    <span>OCDE</span>
-                                </a>
-                                <a href="https://edmcouncil.org/dcam" target="_blank" class="benchmark-item">
-                                    <img src="https://via.placeholder.com/80x40/E67E22/FFFFFF?text=DCAM" alt="DCAM">
-                                    <span>DCAM</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Onglet Info -->
-        <div id="info" class="tab-content">
-            <div class="container">
-                <div class="dashboard-header">
-                    <h2>Information</h2>
-                    <div class="sub-nav">
-                        <button class="sub-nav__btn sub-nav__btn--active" data-subtab="apropos">À propos</button>
-                        <button class="sub-nav__btn" data-subtab="partenaires">Partenaires</button>
-                        <button class="sub-nav__btn" data-subtab="charte">Charte éditoriale</button>
-                    </div>
-                </div>
-
-                <!-- À propos -->
-                <div id="apropos" class="subtab-content subtab-content--active">
-                    <div class="info-content">
-                        <section class="mission-section">
-                            <h3>Mission du projet</h3>
-                            <p>Le ThinkTank IIBA × GECAM vise à développer le premier Livre Blanc de la Business Analyse au Cameroun, créant un référentiel national pour les professionnels et entreprises du secteur.</p>
-                            
-                            <div class="objectives">
-                                <h4>Objectifs principaux</h4>
-                                <div class="objectives-grid">
-                                    <div class="objective-card">
-                                        <h5>1. Référentiel National</h5>
-                                        <p>Établir les standards et bonnes pratiques de la Business Analyse adaptés au contexte camerounais.</p>
-                                    </div>
-                                    <div class="objective-card">
-                                        <h5>2. Guide Pratique</h5>
-                                        <p>Fournir des outils concrets et des méthodologies éprouvées pour les professionnels.</p>
-                                    </div>
-                                    <div class="objective-card">
-                                        <h5>3. Communauté d'Experts</h5>
-                                        <p>Fédérer les compétences nationales autour d'une vision commune de la transformation digitale.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="timeline-section">
-                            <h3>Calendrier du projet</h3>
-                            <div class="timeline">
-                                <div class="timeline-item">
-                                    <div class="timeline-date">Sept - Oct 2025</div>
-                                    <div class="timeline-content">
-                                        <h4>Phase 1 : Diagnostic et fondations</h4>
-                                        <p>Analyse du contexte, définition des standards, structuration de l'équipe.</p>
-                                    </div>
-                                </div>
-                                <div class="timeline-item">
-                                    <div class="timeline-date">Oct - Nov 2025</div>
-                                    <div class="timeline-content">
-                                        <h4>Phase 2 : Rédaction collaborative</h4>
-                                        <p>Développement des contenus, cas d'usage sectoriels, méthodologies pratiques.</p>
-                                    </div>
-                                </div>
-                                <div class="timeline-item">
-                                    <div class="timeline-date">Nov - Déc 2025</div>
-                                    <div class="timeline-content">
-                                        <h4>Phase 3 : Finalisation et publication</h4>
-                                        <p>Révision, validation, publication officielle et lancement communautaire.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-
-                <!-- Partenaires -->
-                <div id="partenaires" class="subtab-content">
-                    <div class="partners-section">
-                        <h3>Nos partenaires</h3>
-                        <div class="partners-grid" id="partnersGrid"></div>
-                    </div>
-                </div>
-
-                <!-- Charte éditoriale -->
-                <div id="charte" class="subtab-content">
-                    <div class="charter-content">
-                        <section class="standards-section">
-                            <h3>Standards utilisés</h3>
-                            <div class="standards-list">
-                                <div class="standard-item">
-                                    <h4>BABOK v3</h4>
-                                    <p>Guide de référence des connaissances en Business Analyse de l'IIBA.</p>
-                                </div>
-                                <div class="standard-item">
-                                    <h4>DAMA-DMBOK</h4>
-                                    <p>Framework de gestion des données et de gouvernance de l'information.</p>
-                                </div>
-                                <div class="standard-item">
-                                    <h4>COBIT 2019</h4>
-                                    <p>Référentiel de gouvernance et de gestion des systèmes d'information.</p>
-                                </div>
-                                <div class="standard-item">
-                                    <h4>ISO 27001</h4>
-                                    <p>Standard international de sécurité de l'information.</p>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="compliance-section">
-                            <h3>Conformité et réglementations</h3>
-                            <ul class="compliance-list">
-                                <li><strong>RGPD</strong> : Respect des données personnelles européennes</li>
-                                <li><strong>Loi 2024/017</strong> : Protection des données personnelles au Cameroun</li>
-                                <li><strong>Standards CEMAC</strong> : Harmonisation réglementaire sous-régionale</li>
-                                <li><strong>Cadre éthique IIBA</strong> : Code de déontologie professionnel</li>
-                            </ul>
-                        </section>
-
-                        <section class="registration-section">
-                            <h3>Inscription et participation</h3>
-                            <p>Pour contribuer au projet ou rejoindre la communauté des Business Analysts du Cameroun :</p>
-                            <a href="https://forms.google.com/inscription-thinktank" target="_blank" class="btn btn--primary">
-                                Formulaire d'inscription Google Forms
-                            </a>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Onglet Admin -->
-        <div id="admin" class="tab-content">
-            <div class="container">
-                <div class="dashboard-header">
-                    <h2>Administration</h2>
-                    <div class="sub-nav">
-                        <button class="sub-nav__btn sub-nav__btn--active" data-subtab="parametres">Paramètres</button>
-                        <button class="sub-nav__btn" data-subtab="regles">Règles</button>
-                        <button class="sub-nav__btn" data-subtab="importexport">Import/Export</button>
-                        <button class="sub-nav__btn" data-subtab="stats">Statistiques</button>
-                        <button class="sub-nav__btn" data-subtab="emailjs">EmailJS</button>
-                    </div>
-                </div>
-
-                <!-- Paramètres -->
-                <div id="parametres" class="subtab-content subtab-content--active">
-                    <div class="admin-forms">
-                        <div class="card">
-                            <div class="card__body">
-                                <h4>Paramètres du projet</h4>
-                                <form id="projectSettingsForm">
-                                    <div class="form-group">
-                                        <label class="form-label" for="projectName">Nom du projet</label>
-                                        <input type="text" id="projectName" class="form-control" value="ThinkTank IIBA × GECAM">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="projectDeadline">Échéance finale</label>
-                                        <input type="date" id="projectDeadline" class="form-control" value="2025-12-01">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="driveFolder">Dossier Google Drive</label>
-                                        <input type="url" id="driveFolder" class="form-control" placeholder="https://drive.google.com/...">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="sheetsUrl">URL Google Sheets</label>
-                                        <input type="url" id="sheetsUrl" class="form-control" placeholder="https://docs.google.com/spreadsheets/...">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" id="enableWhatsApp" checked> Notifications WhatsApp
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" id="enableEmail" checked> Notifications Email
-                                        </label>
-                                    </div>
-                                    <button type="submit" class="btn btn--primary">Sauvegarder</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Règles -->
-                <div id="regles" class="subtab-content">
-                    <div class="rules-container">
-                        <div class="card">
-                            <div class="card__body">
-                                <h4>Règles de calcul</h4>
-                                <div class="rules-sections">
-                                    <section class="rule-section">
-                                        <h5>Seuils de risque</h5>
-                                        <div class="form-group">
-                                            <label class="form-label" for="riskEleveSeuil">Risque élevé (jours restants ≤)</label>
-                                            <input type="number" id="riskEleveSeuil" class="form-control" value="3" min="1">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label" for="riskMoyenSeuil">Risque moyen (jours restants ≤)</label>
-                                            <input type="number" id="riskMoyenSeuil" class="form-control" value="10" min="1">
-                                        </div>
-                                    </section>
-                                    <section class="rule-section">
-                                        <h5>Facteurs XP</h5>
-                                        <div class="form-group">
-                                            <label class="form-label" for="xpCompletion">Facteur completion</label>
-                                            <input type="number" id="xpCompletion" class="form-control" value="10" min="1" step="0.1">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label" for="xpCoordination">Facteur coordination</label>
-                                            <input type="number" id="xpCoordination" class="form-control" value="5" min="1" step="0.1">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label" for="xpContribution">Facteur contribution</label>
-                                            <input type="number" id="xpContribution" class="form-control" value="2" min="1" step="0.1">
-                                        </div>
-                                    </section>
-                                </div>
-                                <button id="saveRules" class="btn btn--primary">Sauvegarder et recalculer</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Import/Export -->
-                <div id="importexport" class="subtab-content">
-                    <div class="import-export-container">
-                        <div class="card">
-                            <div class="card__body">
-                                <h4>Import / Export</h4>
-                                <div class="import-export-actions">
-                                    <section class="export-section">
-                                        <h5>Export</h5>
-                                        <button id="exportExcel" class="btn btn--primary">Exporter Excel multi-onglets</button>
-                                        <button id="exportJson" class="btn btn--secondary">Exporter JSON</button>
-                                    </section>
-                                    <section class="import-section">
-                                        <h5>Import</h5>
-                                        <div class="form-group">
-                                            <label class="form-label" for="importFile">Fichier Excel</label>
-                                            <input type="file" id="importFile" class="form-control" accept=".xlsx,.xls">
-                                        </div>
-                                        <button id="importExcel" class="btn btn--primary">Importer données</button>
-                                    </section>
-                                </div>
-                                <div id="importStatus" class="import-status"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Statistiques -->
-                <div id="stats" class="subtab-content">
-                    <div class="stats-container">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <h4>Sections totales</h4>
-                                <span class="stat-value" id="statTotalSections">48</span>
-                            </div>
-                            <div class="stat-card">
-                                <h4>Sections terminées</h4>
-                                <span class="stat-value" id="statCompletedSections">2</span>
-                            </div>
-                            <div class="stat-card">
-                                <h4>Contributeurs actifs</h4>
-                                <span class="stat-value" id="statActiveContributors">10</span>
-                            </div>
-                            <div class="stat-card">
-                                <h4>Transitions totales</h4>
-                                <span class="stat-value" id="statTotalTransitions">0</span>
-                            </div>
-                            <div class="stat-card">
-                                <h4>Sections à risque élevé</h4>
-                                <span class="stat-value status--error" id="statHighRiskSections">3</span>
-                            </div>
-                            <div class="stat-card">
-                                <h4>Performance moyenne</h4>
-                                <span class="stat-value" id="statAvgPerformance">2.4/5</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Configuration EmailJS -->
-                <div id="emailjs" class="subtab-content">
-                    <div class="emailjs-container">
-                        <div class="card">
-                            <div class="card__body">
-                                <h4>Configuration EmailJS</h4>
-                                <form id="emailjsConfigForm">
-                                    <div class="form-group">
-                                        <label class="form-label" for="emailjsServiceId">Service ID</label>
-                                        <input type="text" id="emailjsServiceId" class="form-control" placeholder="service_xxxxxxx">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="emailjsTemplateId">Template ID</label>
-                                        <input type="text" id="emailjsTemplateId" class="form-control" placeholder="template_xxxxxxx">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="emailjsPublicKey">Public Key</label>
-                                        <input type="text" id="emailjsPublicKey" class="form-control" placeholder="xxxxxxxxxxxxxxxx">
-                                    </div>
-                                    <div class="emailjs-actions">
-                                        <button type="submit" class="btn btn--primary">Sauvegarder configuration</button>
-                                        <button type="button" id="testEmailjs" class="btn btn--secondary">Tester fonctionnement</button>
-                                    </div>
-                                </form>
-                                <div id="emailjsStatus" class="emailjs-status"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modales -->
-    <div id="sectionModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-        <div class="modal__overlay" aria-hidden="true"></div>
-        <div class="modal__container" role="document">
-            <div class="modal__header">
-                <h3 id="modalTitle">Détails de la section</h3>
-                <button class="modal__close" aria-label="Fermer la modal" data-micromodal-close>&times;</button>
-            </div>
-            <div class="modal__content" id="modalContent"></div>
-            <div class="modal__footer">
-                <button class="btn btn--secondary" data-micromodal-close>Fermer</button>
-            </div>
-        </div>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">IIBA</span>
+      <div class="titles">
+        <h1>ThinkTank IIBA Cameroun × GECAM</h1>
+        <p>📘 Livre Blanc · 📗 Guide — Échéance : 1ᵉʳ déc. 2025</p>
+      </div>
     </div>
+    <div class="actions">
+      <a class="btn primary" target="_blank" rel="noopener"
+         href="https://docs.google.com/forms/d/e/1FAIpQLSeBG3ihN55tvoaD_gbLzoi81Fmrn6eN2rV3KHUPdntgNV2NOw/viewform?usp=sharing&ouid=110996219267002131665">
+        Devenir bénévole
+      </a>
+      <button class="btn icon" id="btnAdmin" title="Admin & paramètres">⚙️</button>
+    </div>
+  </header>
 
-    <script src="app.js"></script>
+  <nav class="tabs">
+    <button class="tab active" data-tab="projet">Projet</button>
+    <button class="tab" data-tab="planning">Planning</button>
+    <button class="tab" data-tab="team">Équipe & Ressources</button>
+    <button class="tab" data-tab="admin">Import/Export</button>
+  </nav>
+
+  <main class="container">
+    <!-- Onglet Projet -->
+    <section class="tabview active" id="tab-projet">
+      <div class="grid-2">
+        <div>
+          <h2>Dashboard Kanban</h2>
+          <div class="kanban">
+            <div class="column"><h3>Icebox</h3><div class="list" data-status="Icebox"></div></div>
+            <div class="column"><h3>À faire</h3><div class="list" data-status="A_faire"></div></div>
+            <div class="column"><h3>En cours</h3><div class="list" data-status="En_cours"></div></div>
+            <div class="column"><h3>En revue</h3><div class="list" data-status="En_revue"></div></div>
+            <div class="column"><h3>Terminé</h3><div class="list" data-status="Termine"></div></div>
+          </div>
+        </div>
+        <div>
+          <h2>Analytics</h2>
+          <div class="cards">
+            <div class="kpi"><span id="kpiTasks">0</span><small>Sous-sections</small></div>
+            <div class="kpi"><span id="kpiContribs">0</span><small>Contributeurs</small></div>
+            <div class="kpi"><span id="kpiCoverage">0%</span><small>Couverture</small></div>
+          </div>
+          <canvas id="burndown" height="140"></canvas>
+          <canvas id="statusChart" height="140"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Planning -->
+    <section class="tabview" id="tab-planning">
+      <h2>Jalons</h2>
+      <table class="table" id="milestonesTbl">
+        <thead><tr><th>ID</th><th>Titre</th><th>Date</th><th>Owner</th><th>Statut</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- Onglet Équipe & Ressources -->
+    <section class="tabview" id="tab-team">
+      <div class="grid-2">
+        <div>
+          <h2>Affectations</h2>
+          <table class="table" id="affectationsTable">
+            <thead>
+              <tr>
+                <th>ID</th><th>Titre</th><th>Document</th><th>Section</th>
+                <th>Coordinateur</th><th>Contributeurs</th><th>Statut</th><th>Échéance</th><th>Risque</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="affectationsTableBody"></tbody>
+          </table>
+        </div>
+        <div>
+          <h2>Ressources</h2>
+          <div class="doc-columns">
+            <div><h3>📘 Livre Blanc</h3><div id="lbList" class="doclist"></div></div>
+            <div><h3>📗 Guide</h3><div id="gdList" class="doclist"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Admin (Import/Export) -->
+    <section class="tabview" id="tab-admin">
+      <h2>Import / Export</h2>
+      <div class="row">
+        <button id="exportExcel" class="btn primary">Exporter Excel multi-onglets</button>
+        <button id="exportJson" class="btn">Exporter JSON</button>
+        <button id="importExcel" class="btn">Importer Excel</button>
+        <input type="file" id="inputExcel" hidden accept=".xlsx,.xls">
+      </div>
+      <p class="muted small">Onglets exportés : SousSections · Contributeurs · Jalons · Projet · RiskLabels.</p>
+    </section>
+  </main>
+
+  <footer class="footer">© IIBA Cameroun × GECAM — 2025</footer>
+
+  <script>
+    // Gestion des onglets
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.tab');
+      const views = document.querySelectorAll('.tabview');
+      tabs.forEach(btn => btn.addEventListener('click', () => {
+        tabs.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        views.forEach(v => v.classList.remove('active'));
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      }));
+    });
+  </script>
 </body>
 </html>
