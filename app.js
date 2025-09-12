@@ -238,6 +238,7 @@ class ThinkTankApp {
         console.log('Initializing ThinkTank App...');
         this.setupEventListeners();
         this.initializeDefaultTabs();
+        this.ensureOfficialStructure();
         this.updateLanguage();
         this.loadAccueilContent();
         this.updateStats();
@@ -309,6 +310,36 @@ class ThinkTankApp {
                 }
             });
         }
+
+        // Import Excel
+        const importBtn = document.getElementById('importExcel');
+        const importFileInput = document.getElementById('importFile');
+        if (importBtn && importFileInput) {
+            importBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!importFileInput.files || importFileInput.files.length === 0) {
+                    alert('Sélectionnez un fichier Excel à importer.');
+                    return;
+                }
+                this.importExcelData(importFileInput.files[0]);
+            });
+        }
+
+        // Raccourcis depuis KPI
+        document.getElementById('totalSections')?.addEventListener('click', () => this.switchTab('info'));
+        document.getElementById('totalContributeurs')?.addEventListener('click', () => this.switchTab('contributeurs'));
+        document.getElementById('progression')?.addEventListener('click', () => {
+            this.switchTab('dashboard');
+            this.switchSubTab('dashboard', 'analytics');
+        });
+        document.getElementById('progressionLB')?.addEventListener('click', () => {
+            this.switchTab('dashboard');
+            this.switchSubTab('dashboard', 'analytics');
+        });
+        document.getElementById('progressionGP')?.addEventListener('click', () => {
+            this.switchTab('dashboard');
+            this.switchSubTab('dashboard', 'analytics');
+        });
         
         console.log('Event listeners setup complete');
     }
@@ -395,6 +426,98 @@ class ThinkTankApp {
         this.loadTabContent(this.currentTab);
     }
 
+    // Ensure official structure and statuses
+    ensureOfficialStructure() {
+        const officialLB = [
+            { id: 'LB-1.1', titre: "Définir la donnée, son rôle stratégique dans l’économie", section: 1, sectionTitre: "Introduction & Diagnostic de maturité" },
+            { id: 'LB-1.2', titre: "Diagnostic simplifié (questionnaire auto-évaluation pour entreprises)", section: 1, sectionTitre: "Introduction & Diagnostic de maturité" },
+            { id: 'LB-1.3', titre: "Positionner le GECAM et l’IIBA comme références nationales", section: 1, sectionTitre: "Introduction & Diagnostic de maturité" },
+            { id: 'LB-2.1', titre: "Finance & assurance (mobile money, scoring, lutte anti-fraude)", section: 2, sectionTitre: "Cas d’usage concrets au Cameroun" },
+            { id: 'LB-2.2', titre: "Santé (télésanté, DME, interopérabilité)", section: 2, sectionTitre: "Cas d’usage concrets au Cameroun" },
+            { id: 'LB-2.3', titre: "Agriculture (agri-intelligence, suivi météo/sols)", section: 2, sectionTitre: "Cas d’usage concrets au Cameroun" },
+            { id: 'LB-2.4', titre: "Commerce & télécoms (CRM, analytics marketing)", section: 2, sectionTitre: "Cas d’usage concrets au Cameroun" },
+            { id: 'LB-2.5', titre: "Secteur public (open data, e-gov)", section: 2, sectionTitre: "Cas d’usage concrets au Cameroun" },
+            { id: 'LB-2.6', titre: "Études de cas détaillées (élément demandé par Rosine)", section: 2, sectionTitre: "Cas d’usage concrets au Cameroun" },
+            { id: 'LB-3.1', titre: "Culture et compétences (fracture numérique, data literacy)", section: 3, sectionTitre: "Obstacles & leviers" },
+            { id: 'LB-3.2', titre: "Outils et coûts (solutions frugales, cloud)", section: 3, sectionTitre: "Obstacles & leviers" },
+            { id: 'LB-3.3', titre: "Confiance & conformité (sécurité, RGPD, loi 2024/017)", section: 3, sectionTitre: "Obstacles & leviers" },
+            { id: 'LB-4.1', titre: "Comparatif Afrique, Europe, OCDE", section: 4, sectionTitre: "Panorama international & benchmarks" },
+            { id: 'LB-4.2', titre: "Bonnes pratiques DAMA-DMBOK, DCAM, ISO", section: 4, sectionTitre: "Panorama international & benchmarks" },
+            { id: 'LB-4.3', titre: "Rapports FMI, Banque mondiale, ONU, WEF", section: 4, sectionTitre: "Panorama international & benchmarks" },
+            { id: 'LB-5.1', titre: "Cadre légal et institutions (loi 2024/017, ANTIC)", section: 5, sectionTitre: "État des lieux au Cameroun" },
+            { id: 'LB-5.2', titre: "Programmes publics (PATNuC, Stratégie IA, SNIA)", section: 5, sectionTitre: "État des lieux au Cameroun" },
+            { id: 'LB-5.3', titre: "Infrastructures existantes et initiatives e-gov", section: 5, sectionTitre: "État des lieux au Cameroun" },
+            { id: 'LB-6.1', titre: "Importance de la visualisation pour la prise de décision", section: 6, sectionTitre: "La Data Visualisation (chapitre spécifique Habib)" },
+            { id: 'LB-6.2', titre: "Outils accessibles aux PME (PowerBI, Google Data Studio, Metabase)", section: 6, sectionTitre: "La Data Visualisation (chapitre spécifique Habib)" },
+            { id: 'LB-6.3', titre: "Exemples locaux et infographies pédagogiques (aligné avec Rosine)", section: 6, sectionTitre: "La Data Visualisation (chapitre spécifique Habib)" },
+            { id: 'LB-7.1', titre: "Entreprises : recommandations selon taille et maturité", section: 7, sectionTitre: "Recommandations & Feuille de route" },
+            { id: 'LB-7.2', titre: "Secteurs stratégiques : finance, santé, agriculture, télécoms, public", section: 7, sectionTitre: "Recommandations & Feuille de route" },
+            { id: 'LB-7.3', titre: "Pouvoirs publics : régulation, gouvernance, open data", section: 7, sectionTitre: "Recommandations & Feuille de route" },
+            { id: 'LB-7.4', titre: "Ligne éditoriale : style simple, cas pratiques, infographies", section: 7, sectionTitre: "Recommandations & Feuille de route" },
+            { id: 'LB-7.5', titre: "Indicateurs et plan d’action (12–18 mois)", section: 7, sectionTitre: "Recommandations & Feuille de route" }
+        ];
+
+        const officialGP = [
+            { id: 'GP-1.1', titre: 'Rôle du guide : référentiel pratique pour professionnels', section: 1, sectionTitre: 'Introduction & Objectifs' },
+            { id: 'GP-1.2', titre: 'Adapté aux réalités des entreprises camerounaises', section: 1, sectionTitre: 'Introduction & Objectifs' },
+            { id: 'GP-2.1', titre: 'Disponibilité, fiabilité, sécurité, valeur', section: 2, sectionTitre: 'Principes généraux de gouvernance des données' },
+            { id: 'GP-2.2', titre: 'Rôles, responsabilités, processus', section: 2, sectionTitre: 'Principes généraux de gouvernance des données' },
+            { id: 'GP-2.3', titre: 'Référentiels clés : DAMA-DMBOK, DCAM, COBIT 2019, ISO 27001', section: 2, sectionTitre: 'Principes généraux de gouvernance des données' },
+            { id: 'GP-3.1', titre: 'CDO, CISO, Data Steward, Architecte, Data Analyst, BA, DPO, etc.', section: 3, sectionTitre: 'Métiers de la Data' },
+            { id: 'GP-3.2', titre: 'Missions, compétences, formations nécessaires', section: 3, sectionTitre: 'Métiers de la Data' },
+            { id: 'GP-3.3', titre: 'Besoin de montée en compétences (certifications, formations locales)', section: 3, sectionTitre: 'Métiers de la Data' },
+            { id: 'GP-4.1', titre: 'PME/TPE (<5 ans) : bases (collecte, sauvegardes)', section: 4, sectionTitre: 'Bonnes pratiques adaptées à la maturité des entreprises' },
+            { id: 'GP-4.2', titre: 'ETI (5–10 ans) : structuration (référent data, dashboards, glossaire)', section: 4, sectionTitre: 'Bonnes pratiques adaptées à la maturité des entreprises' },
+            { id: 'GP-4.3', titre: 'Grandes (>10 ans) : gouvernance complète (MDM, data lake, comité data)', section: 4, sectionTitre: 'Bonnes pratiques adaptées à la maturité des entreprises' },
+            { id: 'GP-5.1', titre: 'Finance/assurance : conformité BCBS 239', section: 5, sectionTitre: 'Recommandations sectorielles' },
+            { id: 'GP-5.2', titre: 'Santé : HL7/FHIR, confidentialité, interopérabilité', section: 5, sectionTitre: 'Recommandations sectorielles' },
+            { id: 'GP-5.3', titre: 'Télécoms/retail : CRM, consentement RGPD', section: 5, sectionTitre: 'Recommandations sectorielles' },
+            { id: 'GP-5.4', titre: 'Secteur public : open data, interop.', section: 5, sectionTitre: 'Recommandations sectorielles' },
+            { id: 'GP-6.1', titre: 'Templates : dictionnaire de données, politiques, check-lists', section: 6, sectionTitre: 'Outillage pratique' },
+            { id: 'GP-6.2', titre: 'Tableaux de bord : qualité, sécurité, conformité', section: 6, sectionTitre: 'Outillage pratique' },
+            { id: 'GP-6.3', titre: 'Ressources gratuites (ajout Rosine)', section: 6, sectionTitre: 'Outillage pratique' },
+            { id: 'GP-7.1', titre: 'Questionnaire pour situer la maturité', section: 7, sectionTitre: 'Auto-évaluation & feuille de route' },
+            { id: 'GP-7.2', titre: 'Matrice de progression 1 → 4 niveaux', section: 7, sectionTitre: 'Auto-évaluation & feuille de route' },
+            { id: 'GP-7.3', titre: 'Roadmap type (priorités, jalons, formations)', section: 7, sectionTitre: 'Auto-évaluation & feuille de route' },
+            { id: 'GP-7.4', titre: 'Annexes : glossaire, cartographie des référentiels', section: 7, sectionTitre: 'Auto-évaluation & feuille de route' }
+        ];
+
+        const byId = new Map(this.data.sousSections.map(s => [s.id, s]));
+        const ensure = (item, document) => {
+            if (byId.has(item.id)) {
+                const s = byId.get(item.id);
+                s.titre = item.titre;
+                s.document = document;
+                s.section = item.section;
+                s.sectionTitre = item.sectionTitre;
+            } else {
+                this.data.sousSections.push({
+                    id: item.id,
+                    titre: item.titre,
+                    description: '',
+                    document,
+                    section: item.section,
+                    sectionTitre: item.sectionTitre,
+                    statut: 'Backlog',
+                    contributeurs: [],
+                    coordinateur: '',
+                    competences: [],
+                    referentiels: [],
+                    echeance: '',
+                    transitions: 0,
+                    dateFin: '',
+                    googleDoc: ''
+                });
+            }
+        };
+
+        officialLB.forEach(item => ensure(item, 'Livre Blanc'));
+        officialGP.forEach(item => ensure(item, 'Guide Pratique'));
+
+        // Met tout en Backlog (alignement initial demandé)
+        this.data.sousSections.forEach(s => { s.statut = 'Backlog'; });
+    }
+
     updateLanguage() {
         const t = this.translations[this.currentLanguage];
         
@@ -420,16 +543,31 @@ class ThinkTankApp {
     loadHeroStats() {
         const totalSections = this.data.sousSections.length;
         const totalContributeurs = this.data.contributeurs.length;
-        const completedSections = this.data.sousSections.filter(s => s.statut === 'Terminé').length;
-        const progression = Math.round((completedSections / totalSections) * 100);
+
+        const getDocProgress = (doc) => {
+            const sections = this.data.sousSections.filter(s => s.document === doc);
+            const completed = sections.filter(s => s.statut === 'Terminé').length;
+            const rate = sections.length > 0 ? Math.round((completed / sections.length) * 100) : 0;
+            return { total: sections.length, completed, rate };
+        };
+
+        const lb = getDocProgress('Livre Blanc');
+        const gp = getDocProgress('Guide Pratique');
 
         const totalSectionsEl = document.getElementById('totalSections');
         const totalContributeursEl = document.getElementById('totalContributeurs');
         const progressionEl = document.getElementById('progression');
+        const progressionLBEl = document.getElementById('progressionLB');
+        const progressionGPEl = document.getElementById('progressionGP');
 
         if (totalSectionsEl) totalSectionsEl.textContent = totalSections;
         if (totalContributeursEl) totalContributeursEl.textContent = totalContributeurs;
-        if (progressionEl) progressionEl.textContent = `${progression}%`;
+        if (progressionLBEl && progressionGPEl) {
+            progressionLBEl.textContent = `${lb.rate}%`;
+            progressionGPEl.textContent = `${gp.rate}%`;
+        } else if (progressionEl) {
+            progressionEl.textContent = `LB: ${lb.rate}% | GP: ${gp.rate}%`;
+        }
     }
 
     loadQuiz() {
@@ -568,11 +706,15 @@ class ThinkTankApp {
         const prioritiesList = document.getElementById('prioritiesList');
         if (!prioritiesList) return;
 
-        const highPrioritySections = this.data.sousSections
-            .filter(section => this.calculateRisk(section) === 'eleve' || section.statut === 'En cours')
-            .slice(0, 6);
+        const statusOrder = { 'Backlog': 0, 'À faire': 1, 'En cours': 2, 'En revue': 3, 'Terminé': 4 };
 
-        prioritiesList.innerHTML = highPrioritySections.map(section => `
+        const topSections = this.data.sousSections
+            .filter(s => s.statut !== 'Terminé')
+            .map(s => ({ ...s, _xp: this.calculateXP(s), _statusIndex: statusOrder[s.statut] ?? 0 }))
+            .sort((a, b) => (b._statusIndex - a._statusIndex) || (b._xp - a._xp))
+            .slice(0, 3);
+
+        prioritiesList.innerHTML = topSections.map(section => `
             <div class="priority-card" data-section="${section.id}">
                 <div class="priority-card__id">${section.id}</div>
                 <div class="priority-card__title">${section.titre}</div>
@@ -581,11 +723,11 @@ class ThinkTankApp {
                     <span class="kanban-card__risk kanban-card__risk--${this.calculateRisk(section)}">
                         ${this.data.config.riskConfig.labels[this.calculateRisk(section)]}
                     </span>
+                    <span class="kanban-card__xp">${this.calculateXP(section)} XP</span>
                 </div>
             </div>
         `).join('');
 
-        // Add click handlers
         prioritiesList.querySelectorAll('.priority-card').forEach(card => {
             card.addEventListener('click', () => {
                 const sectionId = card.dataset.section;
@@ -794,14 +936,28 @@ class ThinkTankApp {
             section.statut = newStatus;
             section.transitions++;
 
-            // Show notification
-            this.showStatusChangeNotification(section, oldStatus, newStatus);
+            // Gérer la date de fin
+            if (newStatus === 'Terminé') {
+                section.dateFin = new Date().toISOString().slice(0, 10);
+            } else if (oldStatus === 'Terminé' && newStatus !== 'Terminé') {
+                section.dateFin = '';
+            }
+
+            // Notification selon préférence
+            if (this.isKanbanNotificationEnabled()) {
+                this.showStatusChangeNotification(section, oldStatus, newStatus);
+            }
 
             // Reload kanban
             this.loadKanbanBoard();
 
             // Update stats
             this.updateStats();
+
+            // Rafraîchir analytics si onglet ouvert
+            if (this.currentTab === 'dashboard' && this.currentSubTab.dashboard === 'analytics') {
+                this.refreshAnalytics();
+            }
         }
     }
 
@@ -855,6 +1011,17 @@ class ThinkTankApp {
             return 'heatmap-cell--low';
         };
 
+        const getStatusBreakdown = (contributorId, document) => {
+            const contributorSections = this.data.sousSections.filter(s => 
+                s.contributeurs.includes(contributorId) && s.document === document
+            );
+            const byStatus = contributorSections.reduce((acc, s) => {
+                acc[s.statut] = (acc[s.statut] || 0) + 1;
+                return acc;
+            }, {});
+            return { total: contributorSections.length, byStatus };
+        };
+
         // Build grid
         let gridHTML = '';
         
@@ -869,11 +1036,15 @@ class ThinkTankApp {
             gridHTML += `<div class="heatmap-cell heatmap-cell--row-header">${contributor.nom}</div>`;
             documents.forEach(document => {
                 const rate = getCompletionRate(contributor.id, document);
+                const breakdown = getStatusBreakdown(contributor.id, document);
+                const breakdownText = Object.entries(breakdown.byStatus)
+                    .map(([k, v]) => `${k}: ${v}`).join(' | ');
+                const formula = `Taux = Terminé / Total = ${(breakdown.byStatus['Terminé'] || 0)} / ${breakdown.total}`;
                 gridHTML += `
                     <div class="heatmap-cell heatmap-cell--data ${getCellClass(rate)}" 
                          data-contributor="${contributor.id}" 
                          data-document="${document}"
-                         title="${contributor.nom} - ${document}: ${rate}%">
+                         title="${contributor.nom} - ${document}: ${rate}%\n${formula}\n${breakdownText}">
                         ${rate}%
                     </div>
                 `;
@@ -1143,9 +1314,10 @@ class ThinkTankApp {
                     `<option value="${c.id}" ${section.coordinateur === c.id ? 'selected' : ''}>${c.nom}</option>`
                 ).join('');
 
-                const contribOptions = contributors.map(c =>
-                    `<option value="${c.id}" ${section.contributeurs.includes(c.id) ? 'selected' : ''}>${c.nom}</option>`
-                ).join('');
+                const contribNames = section.contributeurs.map(id => {
+                    const c = contributors.find(cc => cc.id === id);
+                    return c ? c.nom : id;
+                }).join(', ');
 
                 const risk = this.calculateRisk(section);
                 const xp = this.calculateXP(section);
@@ -1163,9 +1335,8 @@ class ThinkTankApp {
                             </select>
                         </td>
                         <td>
-                            <select class="form-control form-control--sm contrib-select" multiple size="3">
-                                ${contribOptions}
-                            </select>
+                            <button class="btn btn--outline btn--sm contrib-manage-btn">Gérer</button>
+                            <div class="text-secondary contrib-summary">${contribNames || 'Aucun'}</div>
                         </td>
                         <td>${section.statut}</td>
                         <td>${this.formatDate(section.echeance)}</td>
@@ -1182,7 +1353,7 @@ class ThinkTankApp {
                 const row = tableBody.querySelector(`tr[data-section="${section.id}"]`);
                 if (!row) return;
                 const coordSelect = row.querySelector('.coord-select');
-                const contribSelect = row.querySelector('.contrib-select');
+                const manageBtn = row.querySelector('.contrib-manage-btn');
 
                 if (coordSelect) {
                     coordSelect.value = section.coordinateur || '';
@@ -1193,12 +1364,10 @@ class ThinkTankApp {
                     });
                 }
 
-                if (contribSelect) {
-                    contribSelect.addEventListener('change', () => {
-                        const selected = Array.from(contribSelect.selectedOptions).map(o => o.value);
-                        section.contributeurs = selected;
-                        this.updateStats();
-                        showNotification(`Contributeurs mis à jour pour ${section.id}`, 'success');
+                if (manageBtn) {
+                    manageBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.openContributorsModal(section.id);
                     });
                 }
             });
@@ -1215,11 +1384,46 @@ class ThinkTankApp {
 
     loadRessources() {
         console.log('Loading Ressources...');
-        // Implementation similar to existing but with proper error handling
+        const container = document.getElementById('ressourcesDocuments');
+        if (!container) return;
+
+        const documents = [...new Set(this.data.sousSections.map(s => s.document))];
+        const getDocProgress = (doc) => {
+            const sections = this.data.sousSections.filter(s => s.document === doc);
+            const completed = sections.filter(s => s.statut === 'Terminé').length;
+            const rate = sections.length ? Math.round((completed / sections.length) * 100) : 0;
+            return { total: sections.length, completed, rate };
+        };
+
+        container.innerHTML = documents.map(doc => {
+            const prog = getDocProgress(doc);
+            const sections = this.data.sousSections.filter(s => s.document === doc);
+            const sectionsHTML = sections.map(s => `
+                <div class="ressource-section">
+                    <div class="ressource-section__info">
+                        <div class="ressource-section__id">${s.id}</div>
+                        <div class="ressource-section__title">${s.titre}</div>
+                    </div>
+                    <div class="ressource-section__actions">
+                        ${s.googleDoc ? `<a href="${s.googleDoc}" target="_blank" class="btn btn--outline btn--sm">Google Doc</a>` : ''}
+                        <button class="btn btn--primary btn--sm" onclick="openGoogleDoc('${s.googleDoc || '#'}')">Ouvrir</button>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="ressource-document">
+                    <h4>${doc} <span class="ressource-progress">${prog.completed}/${prog.total} (${prog.rate}%)</span></h4>
+                    <div class="progress-bar"><div class="progress-bar__fill" style="width:${prog.rate}%"></div></div>
+                    <div class="ressource-sections">${sectionsHTML}</div>
+                </div>
+            `;
+        }).join('');
     }
 
     loadInfoContent() {
         console.log('Loading Info content...');
+        this.enhanceTimeline();
         this.loadPartnersGrid();
     }
 
@@ -1237,6 +1441,56 @@ class ThinkTankApp {
                 </a>
             </div>
         `).join('');
+    }
+
+    enhanceTimeline() {
+        const timeline = document.querySelector('#apropos .timeline');
+        if (!timeline) return;
+
+        // Cursor of current date
+        const start = new Date(this.data.config.project.startDate);
+        const end = new Date(this.data.config.project.deadline);
+        const today = new Date();
+        const total = end - start;
+        const elapsed = Math.max(0, Math.min(total, today - start));
+        const pct = total > 0 ? Math.round((elapsed / total) * 100) : 0;
+
+        let cursor = timeline.querySelector('.timeline-cursor');
+        if (!cursor) {
+            cursor = document.createElement('div');
+            cursor.className = 'timeline-cursor';
+            cursor.style.cssText = 'position:absolute; top:0; bottom:0; width:2px; background: crimson;';
+            timeline.appendChild(cursor);
+        }
+        cursor.style.left = `calc(${pct}% - 1px)`;
+        cursor.title = `Progression temps projet: ${pct}%`;
+
+        // Metrics: contributors by document and completed per month
+        const metricsId = 'timeline-metrics';
+        let metrics = document.getElementById(metricsId);
+        if (!metrics) {
+            metrics = document.createElement('div');
+            metrics.id = metricsId;
+            metrics.className = 'timeline-metrics';
+            metrics.style.cssText = 'margin-top:12px; display:grid; gap:8px;';
+            timeline.parentElement.appendChild(metrics);
+        }
+        const docs = [...new Set(this.data.sousSections.map(s => s.document))];
+        const contribByDoc = docs.map(doc => {
+            const uniq = new Set();
+            this.data.sousSections.filter(s => s.document === doc).forEach(s => s.contributeurs.forEach(c => uniq.add(c)));
+            return `${doc}: ${uniq.size} contributeur(s)`;
+        }).join(' • ');
+
+        const byMonth = this.data.sousSections
+            .filter(s => s.dateFin)
+            .reduce((acc, s) => { const m = s.dateFin.slice(0,7); acc[m] = (acc[m]||0)+1; return acc; }, {});
+        const monthsText = Object.keys(byMonth).sort().map(m => `${m}: ${byMonth[m]}`).join(' • ');
+
+        metrics.innerHTML = `
+            <div><strong>Contributeurs par document:</strong> ${contribByDoc || 'N/A'}</div>
+            <div><strong>Sections terminées par mois:</strong> ${monthsText || 'N/A'}</div>
+        `;
     }
 
     loadAdminContent() {
@@ -1290,6 +1544,7 @@ class ThinkTankApp {
             referentiels: normalize(s.referentiels),
             echeance: s.echeance,
             transitions: s.transitions,
+            dateFin: s.dateFin || '',
             googleDoc: s.googleDoc
         }));
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sousSectionsData), 'SousSections');
@@ -1373,6 +1628,138 @@ class ThinkTankApp {
         showNotification('Export JSON généré', 'success');
     }
 
+    importExcelData(file) {
+        if (typeof XLSX === 'undefined') {
+            alert('La bibliothèque Excel (XLSX) est introuvable.');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const wb = XLSX.read(e.target.result, { type: 'binary' });
+                const readSheet = (name) => wb.Sheets[name] ? XLSX.utils.sheet_to_json(wb.Sheets[name]) : [];
+                const parseList = (v) => (typeof v === 'string') ? v.split(/;\s*/).filter(Boolean) : (Array.isArray(v) ? v : []);
+
+                // Sous-sections
+                const ssRows = readSheet('SousSections');
+                if (ssRows.length) {
+                    this.data.sousSections = ssRows.map(r => ({
+                        id: r.id,
+                        titre: r.titre,
+                        description: r.description || '',
+                        document: r.document,
+                        section: r.section,
+                        sectionTitre: r.sectionTitre || '',
+                        statut: r.statut || 'Backlog',
+                        contributeurs: parseList(r.contributeurs),
+                        coordinateur: r.coordinateur || '',
+                        competences: parseList(r.competences),
+                        referentiels: parseList(r.referentiels),
+                        echeance: r.echeance || '',
+                        transitions: Number(r.transitions) || 0,
+                        dateFin: r.dateFin || '',
+                        googleDoc: r.googleDoc || ''
+                    }));
+                }
+
+                // Contributeurs
+                const cRows = readSheet('Contributeurs');
+                if (cRows.length) {
+                    this.data.contributeurs = cRows.map(r => ({
+                        id: r.id,
+                        nom: r.nom,
+                        email: r.email || '',
+                        linkedin: r.linkedin || '',
+                        competences: parseList(r.competences),
+                        secteurs: parseList(r.secteurs),
+                        experience: Number(r.experience) || 0,
+                        disponibilite: Number(r.disponibilite) || 0,
+                        role: r.role || 'Contributeur',
+                        xp: Number(r.xp) || 0,
+                        badges: parseList(r.badges),
+                        bio: r.bio || ''
+                    }));
+                }
+
+                // Statuses
+                const sRows = readSheet('Statuses');
+                if (sRows.length) {
+                    this.data.config.statuses = sRows.map(r => r.statut).filter(Boolean);
+                }
+
+                // Config Project
+                const pRows = readSheet('Config_Project');
+                if (pRows.length) {
+                    const p = pRows[0];
+                    this.data.config.project = {
+                        name: p.name || this.data.config.project.name,
+                        startDate: p.startDate || this.data.config.project.startDate,
+                        deadline: p.deadline || this.data.config.project.deadline,
+                        description: p.description || this.data.config.project.description
+                    };
+                }
+
+                // RiskConfig
+                const rRows = readSheet('RiskConfig');
+                if (rRows.length) {
+                    const r = rRows[0];
+                    this.data.config.riskConfig = {
+                        thresholds: { eleve: Number(r.threshold_eleve)||3, moyen: Number(r.threshold_moyen)||10 },
+                        labels: { eleve: r.label_eleve||'élevé', moyen: r.label_moyen||'moyen', faible: r.label_faible||'faible' }
+                    };
+                }
+
+                // Partners
+                const prRows = readSheet('Partners');
+                if (prRows.length) {
+                    this.data.config.partners = prRows.map(p => ({ name: p.name, logo: p.logo, url: p.url }));
+                }
+
+                // Quiz
+                const qRows = readSheet('Quiz');
+                if (qRows.length) {
+                    this.data.quiz.questions = qRows.map(q => ({
+                        id: Number(q.id) || 0,
+                        question: q.question || '',
+                        options: parseList(q.options),
+                        correct: Number(q.correctIndex) || 0
+                    }));
+                }
+
+                // Refresh UI
+                this.updateStats();
+                this.loadTabContent(this.currentTab);
+                if (this.currentTab === 'dashboard') {
+                    this.loadSubTabContent('dashboard', this.currentSubTab.dashboard || 'kanban');
+                }
+                showNotification('Import Excel terminé avec succès', 'success');
+            } catch (err) {
+                console.error('Erreur import Excel:', err);
+                alert("Échec de l'import Excel. Vérifiez la console.");
+            }
+        };
+        reader.readAsBinaryString(file);
+    }
+
+    isKanbanNotificationEnabled() {
+        const el = document.getElementById('enableKanbanNotifications');
+        return el ? !!el.checked : true;
+    }
+
+    refreshAnalytics() {
+        const ids = ['statusChart','progressChart','burndownChart'];
+        ids.forEach(id => {
+            const old = document.getElementById(id);
+            if (old && old.parentNode) {
+                old.parentNode.innerHTML = `<canvas id="${id}"></canvas>`;
+            }
+        });
+        this.loadStatusChart();
+        this.loadProgressChart();
+        this.loadBurndownChart();
+        this.loadContributorRanking();
+    }
+
     // Utility methods
     calculateRisk(section) {
         const today = new Date();
@@ -1390,7 +1777,8 @@ class ThinkTankApp {
             return total + (contributor ? contributor.xp : 0);
         }, 0);
         
-        return Math.floor(contributorXP / section.contributeurs.length) || 0;
+        // Règle: XP sous-section = somme des XP des contributeurs
+        return contributorXP || 0;
     }
 
     formatDate(dateString) {
@@ -1421,18 +1809,8 @@ class ThinkTankApp {
     }
 
     handleCandidatureSubmission(form) {
-        const formData = new FormData(form);
-        const candidature = {
-            nom: formData.get('nom'),
-            email: formData.get('email'),
-            experience: formData.get('experience'),
-            domaines: formData.get('domaines')
-        };
-        
-        // In a real app, this would be sent to a backend
-        console.log('Candidature soumise:', candidature);
-        alert('Candidature soumise avec succès ! Nous vous contacterons bientôt.');
-        form.reset();
+        const url = 'https://docs.google.com/forms/d/e/1FAIpQLSeBG3ihN55tvoaD_gbLzoi81Fmrn6eN2rV3KHUPdntgNV2NOw/viewform?usp=sharing&ouid=110996219267002131665';
+        window.open(url, '_blank');
     }
 
     setupModals() {
@@ -1530,6 +1908,73 @@ class ThinkTankApp {
 
     showHeatmapDetail(contributorId, document) {
         // Implementation for heatmap detail modal
+    }
+
+    // Contributeurs modal management
+    openContributorsModal(sectionId) {
+        const modal = document.getElementById('contributorsModal');
+        if (!modal) return;
+        this._contribModalState = { sectionId };
+        const section = this.data.sousSections.find(s => s.id === sectionId);
+        const list = document.getElementById('contributorsModalList');
+        const search = document.getElementById('contributorsSearch');
+        const title = document.getElementById('contributorsModalTitle');
+        const saveBtn = document.getElementById('contributorsSave');
+
+        if (title) title.textContent = `Attribuer des contributeurs – ${section.id}`;
+
+        const renderList = (query = '') => {
+            if (!list) return;
+            const q = query.toLowerCase();
+            list.innerHTML = this.data.contributeurs
+                .filter(c => !q || c.nom.toLowerCase().includes(q) || c.id.toLowerCase().includes(q))
+                .map(c => {
+                    const checked = section.contributeurs.includes(c.id) ? 'checked' : '';
+                    return `
+                        <label style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--color-border);">
+                            <input type="checkbox" value="${c.id}" ${checked} />
+                            <span>${c.nom} <small class="text-secondary">(${c.id})</small></span>
+                        </label>
+                    `;
+                }).join('');
+        };
+
+        renderList();
+
+        if (search) {
+            search.value = '';
+            search.oninput = (e) => renderList(e.target.value);
+        }
+
+        if (saveBtn) {
+            saveBtn.onclick = () => {
+                const checks = list.querySelectorAll('input[type="checkbox"]');
+                const selected = Array.from(checks).filter(i => i.checked).map(i => i.value);
+                section.contributeurs = selected;
+                // Update affectations table row summary + XP
+                const row = document.querySelector(`tr[data-section="${section.id}"]`);
+                if (row) {
+                    const summary = row.querySelector('.contrib-summary');
+                    if (summary) {
+                        const names = selected.map(id => {
+                            const c = this.data.contributeurs.find(cc => cc.id === id);
+                            return c ? c.nom : id;
+                        }).join(', ');
+                        summary.textContent = names || 'Aucun';
+                    }
+                    const xpCell = row.querySelector('td:last-child');
+                    if (xpCell) xpCell.textContent = this.calculateXP(section);
+                }
+                this.updateStats();
+                if (this.currentTab === 'dashboard' && this.currentSubTab.dashboard === 'analytics') {
+                    this.refreshAnalytics();
+                }
+                this.closeModal();
+                showNotification(`Contributeurs mis à jour pour ${section.id}`, 'success');
+            };
+        }
+
+        this.showModal(modal);
     }
 }
 
