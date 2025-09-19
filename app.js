@@ -1,4 +1,9 @@
 // ThinkTank IIBA × GECAM - Application JavaScript Complete - Version Corrigée
+function showNotification(message, type = 'info') {
+    // Simple version: alert, or remplace par un toast si besoin
+    alert(message);
+}
+
 class ThinkTankApp {
     constructor() {
         this.currentTab = 'accueil';
@@ -1093,9 +1098,10 @@ class ThinkTankApp {
         const ids = ['statusChart', 'progressChart', 'burndownChart'];
         ids.forEach(id => {
             const old = document.getElementById(id);
-            if (!old) return;
-            const parent = old.parentNode;
-            if (parent) parent.innerHTML = `<canvas id="${id}"></canvas>`;
+            if (old) {
+                const parent = old.parentNode;
+                if (parent) parent.innerHTML = `<canvas id="${id}"></canvas>`;
+            }
         });
         this.loadAnalytics();
     }
@@ -1615,7 +1621,7 @@ class ThinkTankApp {
             role: c.role,
             xp: c.xp,
             badges: normalize(c.badges),
-            bio: c.bio
+                       bio: c.bio
         }));
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(contribData), 'Contributeurs');
 
@@ -1689,7 +1695,7 @@ class ThinkTankApp {
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                const wb = XLSX.read(e.target.result, { type: 'binary' });
+                const wb = XLSX.read(e.target.result, { type: 'array' });
                 const readSheet = (name) => wb.Sheets[name] ? XLSX.utils.sheet_to_json(wb.Sheets[name]) : [];
                 const parseList = (v) => (typeof v === 'string') ? v.split(/;\s*/).filter(Boolean) : (Array.isArray(v) ? v : []);
 
@@ -1774,7 +1780,7 @@ class ThinkTankApp {
                     this.data.quiz.questions = qRows.map(q => ({
                         id: Number(q.id) || 0,
                         question: q.question || '',
-                        options: parseList(q.options),
+                        options: (typeof q.options === 'string') ? q.options.split(/;\s*/).filter(Boolean) : (Array.isArray(q.options) ? q.options : []),
                         correct: Number(q.correctIndex) || 0
                     }));
                 }
@@ -1788,10 +1794,13 @@ class ThinkTankApp {
                 showNotification('Import Excel terminé avec succès', 'success');
             } catch (err) {
                 console.error('Erreur import Excel:', err);
-                alert("Échec de l'import Excel. Vérifiez la console.");
+                alert("Échec de l'import Excel. Vérifiez la console.\n" + err.message);
+                // Affiche l'erreur dans l'UI si possible
+                const statusDiv = document.getElementById('importStatus');
+                if (statusDiv) statusDiv.textContent = "Erreur import Excel : " + err.message;
             }
         };
-        reader.readAsBinaryString(file);
+        reader.readAsArrayBuffer(file);
     }
 
     isKanbanNotificationEnabled() {
@@ -2043,32 +2052,150 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     window.thinkTankApp = new ThinkTankApp();
 }
 
-// Global utility functions for inline handlers
-function openGoogleDoc(url) {
-    window.open(url, '_blank');
+// Fonction pour importer un fichier Excel (utilisée pour import manuel ET auto)
+function importExcelFileFromArrayBuffer(arrayBuffer) {
+    try {
+        const wb = XLSX.read(arrayBuffer, { type: 'array' });
+
+        // Récupère les données importées
+        let sousSections = [];
+        let contributeurs = [];
+        let statuses = [];
+        let configProject = {};
+        let riskConfig = {};
+        let partners = [];
+        let quizQuestions = [];
+
+        if (wb.Sheets['SousSections']) {
+            sousSections = XLSX.utils.sheet_to_json(wb.Sheets['SousSections']);
+        }
+        if (wb.Sheets['Contributeurs']) {
+            contributeurs = XLSX.utils.sheet_to_json(wb.Sheets['Contributeurs']);
+        }
+        if (wb.Sheets['Statuses']) {
+            statuses = XLSX.utils.sheet_to_json(wb.Sheets['Statuses']).map(r => r.statut).filter(Boolean);
+        }
+        if (wb.Sheets['Config_Project']) {
+            const p = XLSX.utils.sheet_to_json(wb.Sheets['Config_Project'])[0] || {};
+            configProject = {
+                name: p.name || '',
+                startDate: p.startDate || '',
+                deadline: p.deadline || '',
+                description: p.description || ''
+            };
+        }
+        if (wb.Sheets['RiskConfig']) {
+            const r = XLSX.utils.sheet_to_json(wb.Sheets['RiskConfig'])[0] || {};
+            riskConfig = {
+                thresholds: { eleve: Number(r.threshold_eleve)||3, moyen: Number(r.threshold_moyen)||10 },
+                labels: { eleve: r.label_eleve||'élevé', moyen: r.label_moyen||'moyen', faible: r.label_faible||'faible' }
+            };
+        }
+        if (wb.Sheets['Partners']) {
+            partners = XLSX.utils.sheet_to_json(wb.Sheets['Partners']);
+        }
+        if (wb.Sheets['Quiz']) {
+            quizQuestions = XLSX.utils.sheet_to_json(wb.Sheets['Quiz']).map(q => ({
+                id: Number(q.id) || 0,
+                question: q.question || '',
+                options: (typeof q.options === 'string') ? q.options.split(/;\s*/).filter(Boolean) : (Array.isArray(q.options) ? q.options : []),
+                correct: Number(q.correctIndex) || 0
+            }));
+        }
+
+        // Injection dans l'app principale
+        if (window.thinkTankApp) {
+            // Injection des données importées
+            if (sousSections.length) window.thinkTankApp.data.sousSections = sousSections;
+            if (contributeurs.length) window.thinkTankApp.data.contributeurs = contributeurs;
+            if (statuses.length) window.thinkTankApp.data.config.statuses = statuses;
+            if (Object.keys(configProject).length) window.thinkTankApp.data.config.project = configProject;
+            if (Object.keys(riskConfig).length) window.thinkTankApp.data.config.riskConfig = riskConfig;
+            if (partners.length) window.thinkTankApp.data.config.partners = partners;
+            if (quizQuestions.length) window.thinkTankApp.data.quiz.questions = quizQuestions;
+
+            window.thinkTankApp.updateStats();
+            window.thinkTankApp.loadTabContent(window.thinkTankApp.currentTab);
+            if (window.thinkTankApp.currentTab === 'dashboard') {
+                window.thinkTankApp.loadSubTabContent('dashboard', window.thinkTankApp.currentSubTab.dashboard || 'kanban');
+            }
+        }
+
+        // Profils (Admins, Coordinateurs, Contributeurs)
+        function sheetToProfiles(sheetName, containerId) {
+            if (!wb.Sheets[sheetName]) return;
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
+            const grid = document.getElementById(containerId);
+            if (grid) {
+                grid.innerHTML = '';
+                rows.forEach(obj => {
+                    const div = document.createElement('div');
+                    div.className = 'profile-card';
+                    div.dataset.role = obj['Rôle'] || '';
+                    div.dataset.email = obj['Email'] || '';
+                    div.dataset.xp = obj['XP'] || '';
+                    div.innerHTML = `<div class="profile-card__name">${obj['Nom'] || ''}</div>`;
+                    grid.appendChild(div);
+                });
+            }
+        }
+        sheetToProfiles('Admins', 'adminProfiles');
+        sheetToProfiles('Coordinateurs', 'coordinatorProfiles');
+        sheetToProfiles('Contributeurs', 'contributorProfiles');
+
+        // Forcer la mise à jour de certains compteurs/statistiques si besoin
+        // (exemple: total contributeurs)
+        const totalContrib = document.getElementById('contributorProfiles')?.children.length || 0;
+        if (document.getElementById('totalContributeurs')) {
+            document.getElementById('totalContributeurs').textContent = totalContrib;
+        }
+        if (document.getElementById('statActiveContributors')) {
+            document.getElementById('statActiveContributors').textContent = totalContrib;
+        }
+
+        // Affiche un message de succès si appelé depuis l'import manuel
+        if (document.getElementById('importStatus')) {
+            document.getElementById('importStatus').textContent = "Importation réussie !";
+        }
+        showNotification('Import Excel terminé avec succès', 'success');
+    } catch (err) {
+        console.error('Erreur import Excel:', err);
+        if (document.getElementById('importStatus')) {
+            document.getElementById('importStatus').textContent = "Erreur lors de l'import : " + err.message;
+        }
+        alert("Erreur lors de l'import : " + err.message);
+    }
 }
 
-function showNotification(message, type = 'info') {
-    // Simple notification system
-    const notification = document.createElement('div');
-    notification.className = `notification notification--${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-base);
-        padding: var(--space-12) var(--space-16);
-        z-index: 1001;
-        max-width: 300px;
-        box-shadow: var(--shadow-lg);
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
-}
+// Import manuel (bouton)
+document.getElementById('importExcel').addEventListener('click', function () {
+    const fileInput = document.getElementById('importFile');
+    const statusDiv = document.getElementById('importStatus');
+    if (!fileInput.files.length) {
+        statusDiv.textContent = "Veuillez sélectionner un fichier Excel.";
+        return;
+    }
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        importExcelFileFromArrayBuffer(e.target.result);
+    };
+    reader.readAsArrayBuffer(file);
+});
+
+// Chargement automatique du fichier Excel par défaut au démarrage
+document.addEventListener('DOMContentLoaded', function () {
+    fetch('thinktank_export_default.xlsx')
+        .then(resp => {
+            if (!resp.ok) throw new Error('Fichier Excel par défaut introuvable');
+            return resp.arrayBuffer();
+        })
+        .then(arrayBuffer => {
+            importExcelFileFromArrayBuffer(arrayBuffer);
+        })
+        .catch(err => {
+            if (document.getElementById('importStatus')) {
+                document.getElementById('importStatus').textContent = "Impossible de charger le fichier Excel par défaut : " + err.message;
+            }
+        });
+});
